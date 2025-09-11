@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Just My Luck</title>
+  <meta name="description" content="Just My Luck — a delightfully cursed landing page." />
+
+  <meta property="og:title" content="Just My Luck" />
+  <meta property="og:description" content="A delightfully cursed landing page." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://justmyluck.wtf" />
+  <meta property="og:image" content="/social-card.jpg" />
+
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="theme-color" content="#0f172a" />
+
+  <style>
+    :root {
+      --bg: #0f172a;         /* slate-900 */
+      --fg: #e2e8f0;         /* slate-200 */
+      --muted: #94a3b8;      /* slate-400 */
+      --accent: #a78bfa;     /* violet-400 */
+      --accent-2: #22d3ee;   /* cyan-400 */
+      --die: #0b1220;        /* deep panel */
+      --die-edge: #111827;   /* edge */
+      --pip: #e5e7eb;        /* pip color */
+      --shadow: rgba(0,0,0,.45);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--fg);
+      background:
+        radial-gradient(1200px 1200px at 20% 10%, rgba(167,139,250,.18), transparent 60%),
+        radial-gradient(1000px 1000px at 80% 20%, rgba(34,211,238,.12), transparent 60%),
+        linear-gradient(180deg, #0b1220, var(--bg));
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+    header { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .2px; }
+    .logo { width: 36px; height: 36px; border-radius: 12px; background: conic-gradient(from 180deg, var(--accent), var(--accent-2), var(--accent)); box-shadow: 0 12px 30px rgba(34,211,238,.25), inset 0 0 16px rgba(255,255,255,.15); }
+
+    .hero { display: grid; place-items: center; text-align: center; padding: 40px 0 20px; }
+    .title { font-size: clamp(42px, 6.5vw, 80px); margin: 0 0 6px; font-weight: 900; }
+    .subtitle { color: var(--muted); margin: 0 0 24px; }
+
+    /* Dice layout */
+    .table { position: relative; margin: 18px auto 0; width: min(92vw, 780px); height: min(68vh, 520px); border-radius: 26px; background: radial-gradient(120% 120% at 50% 10%, #0f172a 0%, #0b1220 60%, #0a0f1a 100%); box-shadow: 0 40px 80px var(--shadow), inset 0 1px 0 rgba(255,255,255,.06); display: grid; place-items: center; overflow: hidden; }
+    .dice-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(18px, 5vw, 44px); align-items: center; }
+
+    .die {
+      --size: clamp(120px, 22vw, 220px);
+      width: var(--size); height: var(--size);
+      background: linear-gradient(180deg, #121826, #0b1220);
+      border-radius: 24px;
+      box-shadow: 0 14px 28px var(--shadow), inset 0 1px 0 rgba(255,255,255,.05);
+      border: 1px solid rgba(226,232,240,.08);
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform .2s ease;
+    }
+    .die::after {
+      content: ""; position: absolute; inset: -1px; border-radius: 24px; pointer-events: none; background: linear-gradient(180deg, rgba(167,139,250,.14), rgba(34,211,238,.08)); mix-blend-mode: screen; opacity: .6;
+    }
+
+    /* Pip grid */
+    .face { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 12%; }
+    .pip { width: 18%; aspect-ratio: 1; border-radius: 50%; background: var(--pip); box-shadow: 0 2px 4px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.4); justify-self: center; align-self: center; opacity: 0; transform: scale(.8); transition: opacity .08s ease, transform .12s ease; }
+    .pip.on { opacity: 1; transform: scale(1); }
+
+    /* Row/col helpers */
+    .r1 { grid-row: 1; } .r2 { grid-row: 2; } .r3 { grid-row: 3; }
+    .c1 { grid-column: 1; } .c2 { grid-column: 2; } .c3 { grid-column: 3; }
+
+    .cta-note { color: var(--muted); font-size: 14px; margin-top: 12px; }
+
+    .links { display: flex; align-items: center; gap: 16px; justify-content: center; margin: 18px 0 8px; }
+    .links a { opacity: .92; }
+    .links a:hover { opacity: 1; }
+
+    footer { text-align: center; color: var(--muted); font-size: 14px; padding: 18px 0 28px; }
+
+    @media (max-width: 640px) {
+      .dice-wrap { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="container" aria-label="Site header">
+    <div class="brand" aria-label="Brand">
+      <div class="logo" aria-hidden="true"></div>
+      <span>Just My Luck</span>
+    </div>
+    <nav class="links" aria-label="Social links">
+      <a href="https://instagram.com/alawstcause" aria-label="Instagram" title="Instagram">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5a5 5 0 1 0 0 10a5 5 0 0 0 0-10zm6.5-.25a1.25 1.25 0 1 0 0 2.5a1.25 1.25 0 0 0 0-2.5z" stroke="currentColor" stroke-width="1.2"/></svg>
+      </a>
+      <a href="https://x.com/lawstcause" aria-label="X" title="X">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 3h3l-7 8l7 10h-3l-5.5-7l-5 7H4l6.5-8.5L4 3h3l5 6.8L18 3z" stroke="currentColor" stroke-width="1.2"/></svg>
+      </a>
+    </nav>
+  </header>
+
+  <main class="container hero" aria-label="Intro">
+    <h1 class="title">Just My Luck</h1>
+    <p class="subtitle">Move your mouse or tap to roll. They always land on snake eyes.</p>
+
+    <section class="table" id="table" aria-label="Dice table">
+      <div class="dice-wrap">
+        <div class="die" id="die1" aria-label="Die one"></div>
+        <div class="die" id="die2" aria-label="Die two"></div>
+      </div>
+      <p class="cta-note">Psst: you can’t beat the odds here.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>© <span id="year"></span> Just My Luck</p>
+    </div>
+  </footer>
+
+  <script>
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Build faces (pips) once per die
+    function buildDie(el){
+      const face = document.createElement('div');
+      face.className = 'face';
+      // 9 positions grid 3x3
+      const coords = [
+        ['r1','c1'], ['r1','c2'], ['r1','c3'],
+        ['r2','c1'], ['r2','c2'], ['r2','c3'],
+        ['r3','c1'], ['r3','c2'], ['r3','c3']
+      ];
+      coords.forEach(([r,c])=>{
+        const pip = document.createElement('span');
+        pip.className = `pip ${r} ${c}`;
+        face.appendChild(pip);
+      });
+      el.appendChild(face);
+    }
+
+    const die1 = document.getElementById('die1');
+    const die2 = document.getElementById('die2');
+    [die1, die2].forEach(buildDie);
+
+    // Mapping of face value to which pip indices are "on"
+    // indices correspond to the coords order above
+    const faceMap = {
+      1: [4],                       // center
+      2: [0,8],                    // tl, br
+      3: [0,4,8],                  // tl, c, br
+      4: [0,2,6,8],                // corners
+      5: [0,2,4,6,8],              // corners + center
+      6: [0,2,3,5,6,8]             // all but middle column center
+    };
+
+    function setFace(el, n){
+      const pips = el.querySelectorAll('.pip');
+      pips.forEach((pip, idx)=> pip.classList.remove('on'));
+      (faceMap[n]||[]).forEach(idx => pips[idx].classList.add('on'));
+    }
+
+    // Start with snake eyes
+    setFace(die1, 1);
+    setFace(die2, 1);
+
+    // Subtle parallax/tilt based on pointer position
+    const table = document.getElementById('table');
+    function tilt(e){
+      const rect = table.getBoundingClientRect();
+      const x = (('touches' in e) ? e.touches[0].clientX : e.clientX) - rect.left;
+      const y = (('touches' in e) ? e.touches[0].clientY : e.clientY) - rect.top;
+      const nx = (x/rect.width - 0.5) * 2;  // -1..1
+      const ny = (y/rect.height - 0.5) * 2; // -1..1
+      const rx = ny * -6;  // rotateX
+      const ry = nx * 6;   // rotateY
+      die1.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+      die2.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+    }
+
+    let rolling = false;
+    let lastRoll = 0;
+
+    function rollDice(){
+      const now = performance.now();
+      if (rolling || now - lastRoll < 250) return; // throttle
+      rolling = true;
+      lastRoll = now;
+
+      const duration = 700 + Math.random()*200; // spin time
+      const start = performance.now();
+
+      const spin = () => {
+        const t = performance.now() - start;
+        if (t < duration) {
+          // show random faces mid-roll
+          const r1 = Math.floor(Math.random()*6)+1;
+          const r2 = Math.floor(Math.random()*6)+1;
+          setFace(die1, r1);
+          setFace(die2, r2);
+          requestAnimationFrame(spin);
+        } else {
+          // always end on snake eyes
+          setFace(die1, 1);
+          setFace(die2, 1);
+          rolling = false;
+        }
+      };
+      spin();
+    }
+
+    table.addEventListener('mousemove', (e)=>{ tilt(e); rollDice(); });
+    table.addEventListener('touchstart', (e)=>{ tilt(e); rollDice(); }, {passive:true});
+    table.addEventListener('touchmove', (e)=>{ tilt(e); rollDice(); }, {passive:true});
+  </script>
+</body>
+</html>
