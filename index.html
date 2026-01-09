@@ -17,14 +17,11 @@
 
   <style>
     :root {
-      --bg: #0f172a;         /* slate-900 */
-      --fg: #e2e8f0;         /* slate-200 */
-      --muted: #94a3b8;      /* slate-400 */
-      --accent: #a78bfa;     /* violet-400 */
-      --accent-2: #22d3ee;   /* cyan-400 */
-      --die: #0b1220;        /* deep panel */
-      --die-edge: #111827;   /* edge */
-      --pip: #e5e7eb;        /* pip color */
+      --bg: #0f172a;
+      --fg: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #a78bfa;
+      --accent-2: #22d3ee;
       --shadow: rgba(0,0,0,.45);
     }
     * { box-sizing: border-box; }
@@ -37,58 +34,39 @@
         radial-gradient(1200px 1200px at 20% 10%, rgba(167,139,250,.18), transparent 60%),
         radial-gradient(1000px 1000px at 80% 20%, rgba(34,211,238,.12), transparent 60%),
         linear-gradient(180deg, #0b1220, var(--bg));
-      overflow-x: hidden;
     }
     a { color: inherit; text-decoration: none; }
     .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
 
     header { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
     .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .2px; }
-    .logo { width: 36px; height: 36px; border-radius: 12px; background: conic-gradient(from 180deg, var(--accent), var(--accent-2), var(--accent)); box-shadow: 0 12px 30px rgba(34,211,238,.25), inset 0 0 16px rgba(255,255,255,.15); }
-
-    .hero { display: grid; place-items: center; text-align: center; padding: 40px 0 20px; }
-    .title { font-size: clamp(42px, 6.5vw, 80px); margin: 0 0 6px; font-weight: 900; }
-    .subtitle { color: var(--muted); margin: 0 0 24px; }
-
-    /* Dice layout */
-    .table { position: relative; margin: 18px auto 0; width: min(92vw, 780px); height: min(68vh, 520px); border-radius: 26px; background: radial-gradient(120% 120% at 50% 10%, #0f172a 0%, #0b1220 60%, #0a0f1a 100%); box-shadow: 0 40px 80px var(--shadow), inset 0 1px 0 rgba(255,255,255,.06); display: grid; place-items: center; overflow: hidden; }
-    .dice-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(18px, 5vw, 44px); align-items: center; }
-
-    .die {
-      --size: clamp(120px, 22vw, 220px);
-      width: var(--size); height: var(--size);
-      background: linear-gradient(180deg, #121826, #0b1220);
-      border-radius: 24px;
-      box-shadow: 0 14px 28px var(--shadow), inset 0 1px 0 rgba(255,255,255,.05);
-      border: 1px solid rgba(226,232,240,.08);
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform .2s ease;
-    }
-    .die::after {
-      content: ""; position: absolute; inset: -1px; border-radius: 24px; pointer-events: none; background: linear-gradient(180deg, rgba(167,139,250,.14), rgba(34,211,238,.08)); mix-blend-mode: screen; opacity: .6;
+    .logo {
+      width: 36px; height: 36px; border-radius: 12px;
+      background: conic-gradient(from 180deg, var(--accent), var(--accent-2), var(--accent));
+      box-shadow: 0 12px 30px rgba(34,211,238,.25), inset 0 0 16px rgba(255,255,255,.15);
     }
 
-    /* Pip grid */
-    .face { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 12%; }
-    .pip { width: 18%; aspect-ratio: 1; border-radius: 50%; background: var(--pip); box-shadow: 0 2px 4px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.4); justify-self: center; align-self: center; opacity: 0; transform: scale(.8); transition: opacity .08s ease, transform .12s ease; }
-    .pip.on { opacity: 1; transform: scale(1); }
-
-    /* Row/col helpers */
-    .r1 { grid-row: 1; } .r2 { grid-row: 2; } .r3 { grid-row: 3; }
-    .c1 { grid-column: 1; } .c2 { grid-column: 2; } .c3 { grid-column: 3; }
-
-    .cta-note { color: var(--muted); font-size: 14px; margin-top: 12px; }
-
-    .links { display: flex; align-items: center; gap: 16px; justify-content: center; margin: 18px 0 8px; }
+    .links { display: flex; align-items: center; gap: 16px; justify-content: center; }
     .links a { opacity: .92; }
     .links a:hover { opacity: 1; }
 
-    footer { text-align: center; color: var(--muted); font-size: 14px; padding: 18px 0 28px; }
+    main { text-align: center; padding: 28px 0 10px; }
+    .title { font-size: clamp(42px, 6.5vw, 80px); margin: 0 0 10px; font-weight: 900; }
+    .subtitle { color: var(--muted); margin: 0 0 22px; }
 
-    @media (max-width: 640px) {
-      .dice-wrap { grid-template-columns: 1fr; }
+    .media {
+      width: min(92vw, 560px);
+      border-radius: 22px;
+      overflow: hidden;
+      background: rgba(17,24,39,.55);
+      border: 1px solid rgba(226,232,240,.10);
+      box-shadow: 0 40px 80px var(--shadow), inset 0 1px 0 rgba(255,255,255,.06);
+      margin: 0 auto;
     }
+
+    video, img { display: block; width: 100%; height: auto; }
+
+    footer { text-align: center; color: var(--muted); font-size: 14px; padding: 20px 0 28px; }
   </style>
 </head>
 <body>
@@ -107,17 +85,24 @@
     </nav>
   </header>
 
-  <main class="container hero" aria-label="Intro">
+  <main class="container" aria-label="Intro">
     <h1 class="title">Just My Luck</h1>
-    <p class="subtitle">Move your mouse or tap to roll. They always land on snake eyes.</p>
+    <p class="subtitle">On loop. Because of course it is.</p>
 
-    <section class="table" id="table" aria-label="Dice table">
-      <div class="dice-wrap">
-        <div class="die" id="die1" aria-label="Die one"></div>
-        <div class="die" id="die2" aria-label="Die two"></div>
-      </div>
-      <p class="cta-note">Psst: you can’t beat the odds here.</p>
-    </section>
+    <div class="media" aria-label="Looping clip">
+      <!--
+        Recommended (tiny + smooth): MP4 loop
+        Put this file in your repo next to index.html:
+          justmyluck-loop-480.mp4
+
+        Optional fallback GIF (bigger file):
+          justmyluck-loop-480.gif
+      -->
+      <video autoplay loop muted playsinline preload="auto">
+        <source src="justmyluck-loop-480.mp4" type="video/mp4" />
+        <img src="justmyluck-loop-480.gif" alt="A short unlucky moment, looping." />
+      </video>
+    </div>
   </main>
 
   <footer>
@@ -127,100 +112,7 @@
   </footer>
 
   <script>
-    // Footer year
     document.getElementById('year').textContent = new Date().getFullYear();
-
-    // Build faces (pips) once per die
-    function buildDie(el){
-      const face = document.createElement('div');
-      face.className = 'face';
-      // 9 positions grid 3x3
-      const coords = [
-        ['r1','c1'], ['r1','c2'], ['r1','c3'],
-        ['r2','c1'], ['r2','c2'], ['r2','c3'],
-        ['r3','c1'], ['r3','c2'], ['r3','c3']
-      ];
-      coords.forEach(([r,c])=>{
-        const pip = document.createElement('span');
-        pip.className = `pip ${r} ${c}`;
-        face.appendChild(pip);
-      });
-      el.appendChild(face);
-    }
-
-    const die1 = document.getElementById('die1');
-    const die2 = document.getElementById('die2');
-    [die1, die2].forEach(buildDie);
-
-    // Mapping of face value to which pip indices are "on"
-    // indices correspond to the coords order above
-    const faceMap = {
-      1: [4],                       // center
-      2: [0,8],                    // tl, br
-      3: [0,4,8],                  // tl, c, br
-      4: [0,2,6,8],                // corners
-      5: [0,2,4,6,8],              // corners + center
-      6: [0,2,3,5,6,8]             // all but middle column center
-    };
-
-    function setFace(el, n){
-      const pips = el.querySelectorAll('.pip');
-      pips.forEach((pip, idx)=> pip.classList.remove('on'));
-      (faceMap[n]||[]).forEach(idx => pips[idx].classList.add('on'));
-    }
-
-    // Start with snake eyes
-    setFace(die1, 1);
-    setFace(die2, 1);
-
-    // Subtle parallax/tilt based on pointer position
-    const table = document.getElementById('table');
-    function tilt(e){
-      const rect = table.getBoundingClientRect();
-      const x = (('touches' in e) ? e.touches[0].clientX : e.clientX) - rect.left;
-      const y = (('touches' in e) ? e.touches[0].clientY : e.clientY) - rect.top;
-      const nx = (x/rect.width - 0.5) * 2;  // -1..1
-      const ny = (y/rect.height - 0.5) * 2; // -1..1
-      const rx = ny * -6;  // rotateX
-      const ry = nx * 6;   // rotateY
-      die1.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
-      die2.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
-    }
-
-    let rolling = false;
-    let lastRoll = 0;
-
-    function rollDice(){
-      const now = performance.now();
-      if (rolling || now - lastRoll < 250) return; // throttle
-      rolling = true;
-      lastRoll = now;
-
-      const duration = 700 + Math.random()*200; // spin time
-      const start = performance.now();
-
-      const spin = () => {
-        const t = performance.now() - start;
-        if (t < duration) {
-          // show random faces mid-roll
-          const r1 = Math.floor(Math.random()*6)+1;
-          const r2 = Math.floor(Math.random()*6)+1;
-          setFace(die1, r1);
-          setFace(die2, r2);
-          requestAnimationFrame(spin);
-        } else {
-          // always end on snake eyes
-          setFace(die1, 1);
-          setFace(die2, 1);
-          rolling = false;
-        }
-      };
-      spin();
-    }
-
-    table.addEventListener('mousemove', (e)=>{ tilt(e); rollDice(); });
-    table.addEventListener('touchstart', (e)=>{ tilt(e); rollDice(); }, {passive:true});
-    table.addEventListener('touchmove', (e)=>{ tilt(e); rollDice(); }, {passive:true});
   </script>
 </body>
 </html>
