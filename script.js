@@ -88,6 +88,14 @@ function pickPosition(dice) {
   return { x, y };
 }
 
+function placeDice(dice, x, y) {
+  const tiltX = randomInt(-18, 18);
+  const tiltY = randomInt(-18, 18);
+  dice.style.transform = `translate3d(${x}px, ${y}px, 0px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+  dice.dataset.x = x;
+  dice.dataset.y = y;
+}
+
 function animateDice(dice) {
   const stageRect = stage.getBoundingClientRect();
   const diceRect = dice.getBoundingClientRect();
@@ -161,16 +169,25 @@ function rollDice() {
   }, 900);
 }
 
+function seedPositions() {
+  const stageRect = stage.getBoundingClientRect();
+  const padding = 30;
+  const leftX = padding;
+  const rightX = Math.max(padding, stageRect.width - 180);
+  const midY = Math.max(padding, stageRect.height / 2 - 80);
+
+  placeDice(diceEls[0], leftX, midY);
+  placeDice(diceEls[1], rightX, midY - 40);
+}
+
 setDiceValue(diceEls[0], 1);
 setDiceValue(diceEls[1], 1);
-
-animateDice(diceEls[0]);
-animateDice(diceEls[1]);
+seedPositions();
 
 document.addEventListener('click', () => {
   rollDice();
 });
 
 window.addEventListener('resize', () => {
-  diceEls.forEach((dice) => animateDice(dice));
+  seedPositions();
 });
