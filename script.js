@@ -2,12 +2,12 @@ const stage = document.getElementById('stage');
 const diceEls = [document.getElementById('dice-1'), document.getElementById('dice-2')];
 
 const rotations = {
-  1: 'rotateX(0deg) rotateY(0deg)',
-  2: 'rotateY(-90deg)',
-  3: 'rotateY(180deg)',
-  4: 'rotateY(90deg)',
-  5: 'rotateX(-90deg)',
-  6: 'rotateX(90deg)'
+  1: { x: 0, y: 0 },
+  2: { x: 0, y: -90 },
+  3: { x: 0, y: 180 },
+  4: { x: 0, y: 90 },
+  5: { x: -90, y: 0 },
+  6: { x: 90, y: 0 }
 };
 
 let lastValue = 1;
@@ -143,7 +143,37 @@ function animateDice(dice) {
 
 function setDiceValue(dice, value) {
   const cube = dice.querySelector('.cube');
-  cube.style.transform = rotations[value];
+  const rot = rotations[value];
+  cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
+  cube.dataset.rx = String(rot.x);
+  cube.dataset.ry = String(rot.y);
+}
+
+function animateCubeToValue(dice, value) {
+  const cube = dice.querySelector('.cube');
+  const rot = rotations[value];
+  const fromX = Number(cube.dataset.rx || 0);
+  const fromY = Number(cube.dataset.ry || 0);
+  const spinsX = 360 * randomInt(2, 3);
+  const spinsY = 360 * randomInt(2, 3);
+
+  if (cube._anim) cube._anim.cancel();
+
+  cube._anim = cube.animate(
+    [
+      { transform: `rotateX(${fromX}deg) rotateY(${fromY}deg)` },
+      { transform: `rotateX(${fromX + spinsX}deg) rotateY(${fromY + spinsY}deg)` },
+      { transform: `rotateX(${rot.x}deg) rotateY(${rot.y}deg)` }
+    ],
+    {
+      duration: 900,
+      easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+      fill: 'forwards'
+    }
+  );
+
+  cube.dataset.rx = String(rot.x);
+  cube.dataset.ry = String(rot.y);
 }
 
 function rollDice() {
@@ -155,16 +185,10 @@ function rollDice() {
 
   diceEls.forEach((dice) => {
     animateDice(dice);
-    const cube = dice.querySelector('.cube');
-    cube.classList.add('spinning');
+    animateCubeToValue(dice, value);
   });
 
   setTimeout(() => {
-    diceEls.forEach((dice) => {
-      const cube = dice.querySelector('.cube');
-      cube.classList.remove('spinning');
-      setDiceValue(dice, value);
-    });
     rolling = false;
   }, 900);
 }
