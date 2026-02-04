@@ -3,45 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JustMyLuck.wtf</title>
+    <title>Just My Luck</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="bg-orb bg-orb--one"></div>
-    <div class="bg-orb bg-orb--two"></div>
-
+    <div class="noise"></div>
     <header class="site-header">
-      <div class="brand">JustMyLuck.wtf</div>
+      <div class="brand">Just My Luck</div>
       <nav class="nav">
-        <a href="#features">Features</a>
-        <a href="#how">How it works</a>
-        <a href="#cta">Get Lucky</a>
+        <a href="#roll">Roll</a>
+        <a href="#contact">Get in touch</a>
       </nav>
-      <button class="nav-cta">Join the streak</button>
     </header>
 
     <main>
       <section class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">Luck, engineered</p>
-          <h1>Roll with the universe on your side.</h1>
-          <p class="subhead">
-            JustMyLuck.wtf turns every roll into a moment. Tap the page to spin
-            the dice and reveal a matching pair that has never shown up twice in
-            a row.
-          </p>
-          <div class="hero-actions">
-            <button class="primary">Start the streak</button>
-            <button class="ghost">See the demo</button>
-          </div>
-          <div class="trust">
-            <span>Built for creators</span>
-            <span>Instant energy</span>
-            <span>No limits</span>
-          </div>
-        </div>
+        <p class="tagline">Luck-engineered</p>
+        <h1>Roll with the universe on your side.</h1>
+        <p class="subhead">
+          Click anywhere to roll. The dice always land on a new matching pair.
+        </p>
+      </section>
 
-        <div class="hero-stage" id="stage">
+      <section class="roll-zone" id="roll">
+        <div class="roll-header">
+          <h2>Click anywhere to roll</h2>
+          <p>Two dice. One fate. Never the same pair twice.</p>
+        </div>
+        <div class="roll-stage" id="stage">
           <div class="dice" id="dice-1" aria-label="Dice one">
             <div class="cube">
               <div class="face one">1</div>
@@ -62,66 +51,19 @@
               <div class="face six">6</div>
             </div>
           </div>
-          <p class="hint">Click anywhere to roll.</p>
+          <span class="roll-hint">Tap to roll</span>
         </div>
       </section>
 
-      <section class="info" id="features">
-        <h2>Stack the odds in your favor.</h2>
-        <div class="cards">
-          <article>
-            <h3>Always a match</h3>
-            <p>
-              Every roll lands on a matching pair, so the energy stays aligned
-              with your goal.
-            </p>
-          </article>
-          <article>
-            <h3>Never the same twice</h3>
-            <p>
-              The pair changes on every click. We guarantee a fresh number each
-              time.
-            </p>
-          </article>
-          <article>
-            <h3>3D presence</h3>
-            <p>
-              Lighting, depth, and bounce make the dice feel tactile on any
-              screen.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <section class="info alt" id="how">
+      <section class="contact" id="contact">
         <div>
-          <h2>How JustMyLuck.wtf works</h2>
-          <p>
-            Tap the page and the dice roll across the field. They always land on
-            the same face, but never the one you just saw. It is the perfect
-            loop of momentum.
-          </p>
+          <h2>Feeling lucky? Get in touch.</h2>
+          <p>Drop your email and we will send you the next roll.</p>
         </div>
-        <div class="steps">
-          <div>
-            <span>01</span>
-            <p>Click or tap anywhere on the page.</p>
-          </div>
-          <div>
-            <span>02</span>
-            <p>Watch the dice spin and land together.</p>
-          </div>
-          <div>
-            <span>03</span>
-            <p>Feel the new number change the vibe.</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="cta" id="cta">
-        <h2>Ready to press your luck?</h2>
-        <p>Claim the moment and let the dice set the tempo.</p>
-        <button class="primary">Join JustMyLuck</button>
+        <form class="contact-form">
+          <input type="email" placeholder="you@example.com" required />
+          <button type="submit">Send me luck</button>
+        </form>
       </section>
     </main>
 

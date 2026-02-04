@@ -1,3 +1,4 @@
+const stage = document.getElementById('stage');
 const diceEls = [document.getElementById('dice-1'), document.getElementById('dice-2')];
 
 const rotations = {
@@ -13,13 +14,29 @@ let lastValue = 1;
 let rolling = false;
 let audioCtx;
 
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function pickNewValue() {
+  let value = randomInt(1, 6);
+  while (value === lastValue) {
+    value = randomInt(1, 6);
+  }
+  lastValue = value;
+  return value;
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
 function playRollSound() {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
 
   const now = audioCtx.currentTime;
-
   const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.35, audioCtx.sampleRate);
   const noiseData = noiseBuffer.getChannelData(0);
   for (let i = 0; i < noiseData.length; i += 1) {
@@ -57,29 +74,13 @@ function playRollSound() {
   tone.stop(now + 0.32);
 }
 
-function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
-}
-
-function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function pickNewValue() {
-  let value = randomInt(1, 6);
-  while (value === lastValue) {
-    value = randomInt(1, 6);
-  }
-  lastValue = value;
-  return value;
-}
-
 function pickPosition(dice) {
+  const stageRect = stage.getBoundingClientRect();
   const diceRect = dice.getBoundingClientRect();
-  const padding = 20;
+  const padding = 24;
 
-  const maxX = window.innerWidth - diceRect.width - padding;
-  const maxY = window.innerHeight - diceRect.height - padding;
+  const maxX = stageRect.width - diceRect.width - padding;
+  const maxY = stageRect.height - diceRect.height - padding;
 
   const x = randomInt(padding, Math.max(padding, Math.floor(maxX)));
   const y = randomInt(padding, Math.max(padding, Math.floor(maxY)));
@@ -88,13 +89,15 @@ function pickPosition(dice) {
 }
 
 function animateDice(dice) {
+  const stageRect = stage.getBoundingClientRect();
   const diceRect = dice.getBoundingClientRect();
-  const padding = 20;
-  const maxX = window.innerWidth - diceRect.width - padding;
-  const maxY = window.innerHeight - diceRect.height - padding;
+  const padding = 24;
 
-  const currentX = Number(dice.dataset.x || 40);
-  const currentY = Number(dice.dataset.y || 40);
+  const maxX = stageRect.width - diceRect.width - padding;
+  const maxY = stageRect.height - diceRect.height - padding;
+
+  const currentX = Number(dice.dataset.x || padding);
+  const currentY = Number(dice.dataset.y || padding);
   const { x: targetX, y: targetY } = pickPosition(dice);
 
   const hop1 = {
@@ -161,6 +164,9 @@ function rollDice() {
 setDiceValue(diceEls[0], 1);
 setDiceValue(diceEls[1], 1);
 
+animateDice(diceEls[0]);
+animateDice(diceEls[1]);
+
 document.addEventListener('click', () => {
   rollDice();
 });
@@ -168,6 +174,3 @@ document.addEventListener('click', () => {
 window.addEventListener('resize', () => {
   diceEls.forEach((dice) => animateDice(dice));
 });
-
-animateDice(diceEls[0]);
-animateDice(diceEls[1]);
