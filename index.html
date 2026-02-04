@@ -1,120 +1,130 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Just My Luck</title>
-  <meta name="description" content="Just My Luck — a delightfully cursed landing page." />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JustMyLuck.wtf</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb bg-orb--one"></div>
+    <div class="bg-orb bg-orb--two"></div>
 
-  <meta property="og:title" content="Just My Luck" />
-  <meta property="og:description" content="A delightfully cursed landing page." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://justmyluck.wtf" />
-  <meta property="og:image" content="/social-card.jpg" />
+    <header class="site-header">
+      <div class="brand">JustMyLuck.wtf</div>
+      <nav class="nav">
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#cta">Get Lucky</a>
+      </nav>
+      <button class="nav-cta">Join the streak</button>
+    </header>
 
-  <link rel="icon" href="/favicon.ico" />
-  <meta name="theme-color" content="#0f172a" />
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Luck, engineered</p>
+          <h1>Roll with the universe on your side.</h1>
+          <p class="subhead">
+            JustMyLuck.wtf turns every roll into a moment. Tap the page to spin
+            the dice and reveal a matching pair that has never shown up twice in
+            a row.
+          </p>
+          <div class="hero-actions">
+            <button class="primary">Start the streak</button>
+            <button class="ghost">See the demo</button>
+          </div>
+          <div class="trust">
+            <span>Built for creators</span>
+            <span>Instant energy</span>
+            <span>No limits</span>
+          </div>
+        </div>
 
-  <style>
-    :root {
-      --bg: #0f172a;
-      --fg: #e2e8f0;
-      --muted: #94a3b8;
-      --accent: #a78bfa;
-      --accent-2: #22d3ee;
-      --shadow: rgba(0,0,0,.45);
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      color: var(--fg);
-      background:
-        radial-gradient(1200px 1200px at 20% 10%, rgba(167,139,250,.18), transparent 60%),
-        radial-gradient(1000px 1000px at 80% 20%, rgba(34,211,238,.12), transparent 60%),
-        linear-gradient(180deg, #0b1220, var(--bg));
-    }
-    a { color: inherit; text-decoration: none; }
-    .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+        <div class="hero-stage" id="stage">
+          <div class="dice" id="dice-1" aria-label="Dice one">
+            <div class="cube">
+              <div class="face one">1</div>
+              <div class="face two">2</div>
+              <div class="face three">3</div>
+              <div class="face four">4</div>
+              <div class="face five">5</div>
+              <div class="face six">6</div>
+            </div>
+          </div>
+          <div class="dice" id="dice-2" aria-label="Dice two">
+            <div class="cube">
+              <div class="face one">1</div>
+              <div class="face two">2</div>
+              <div class="face three">3</div>
+              <div class="face four">4</div>
+              <div class="face five">5</div>
+              <div class="face six">6</div>
+            </div>
+          </div>
+          <p class="hint">Click anywhere to roll.</p>
+        </div>
+      </section>
 
-    header { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .2px; }
-    .logo {
-      width: 36px; height: 36px; border-radius: 12px;
-      background: conic-gradient(from 180deg, var(--accent), var(--accent-2), var(--accent));
-      box-shadow: 0 12px 30px rgba(34,211,238,.25), inset 0 0 16px rgba(255,255,255,.15);
-    }
+      <section class="info" id="features">
+        <h2>Stack the odds in your favor.</h2>
+        <div class="cards">
+          <article>
+            <h3>Always a match</h3>
+            <p>
+              Every roll lands on a matching pair, so the energy stays aligned
+              with your goal.
+            </p>
+          </article>
+          <article>
+            <h3>Never the same twice</h3>
+            <p>
+              The pair changes on every click. We guarantee a fresh number each
+              time.
+            </p>
+          </article>
+          <article>
+            <h3>3D presence</h3>
+            <p>
+              Lighting, depth, and bounce make the dice feel tactile on any
+              screen.
+            </p>
+          </article>
+        </div>
+      </section>
 
-    .links { display: flex; align-items: center; gap: 16px; justify-content: center; }
-    .links a { opacity: .92; }
-    .links a:hover { opacity: 1; }
+      <section class="info alt" id="how">
+        <div>
+          <h2>How JustMyLuck.wtf works</h2>
+          <p>
+            Tap the page and the dice roll across the field. They always land on
+            the same face, but never the one you just saw. It is the perfect
+            loop of momentum.
+          </p>
+        </div>
+        <div class="steps">
+          <div>
+            <span>01</span>
+            <p>Click or tap anywhere on the page.</p>
+          </div>
+          <div>
+            <span>02</span>
+            <p>Watch the dice spin and land together.</p>
+          </div>
+          <div>
+            <span>03</span>
+            <p>Feel the new number change the vibe.</p>
+          </div>
+        </div>
+      </section>
 
-    main { text-align: center; padding: 28px 0 10px; }
-    .title { font-size: clamp(42px, 6.5vw, 80px); margin: 0 0 10px; font-weight: 900; }
-    .subtitle { color: var(--muted); margin: 0 0 22px; }
+      <section class="cta" id="cta">
+        <h2>Ready to press your luck?</h2>
+        <p>Claim the moment and let the dice set the tempo.</p>
+        <button class="primary">Join JustMyLuck</button>
+      </section>
+    </main>
 
-    .media {
-      width: min(92vw, 560px);
-      border-radius: 22px;
-      overflow: hidden;
-      background: rgba(17,24,39,.55);
-      border: 1px solid rgba(226,232,240,.10);
-      box-shadow: 0 40px 80px var(--shadow), inset 0 1px 0 rgba(255,255,255,.06);
-      margin: 0 auto;
-    }
-
-    video, img { display: block; width: 100%; height: auto; }
-
-    footer { text-align: center; color: var(--muted); font-size: 14px; padding: 20px 0 28px; }
-  </style>
-</head>
-<body>
-  <header class="container" aria-label="Site header">
-    <div class="brand" aria-label="Brand">
-      <div class="logo" aria-hidden="true"></div>
-      <span>Just My Luck</span>
-    </div>
-    <nav class="links" aria-label="Social links">
-      <a href="https://instagram.com/alawstcause" aria-label="Instagram" title="Instagram">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 5a5 5 0 1 0 0 10a5 5 0 0 0 0-10zm6.5-.25a1.25 1.25 0 1 0 0 2.5a1.25 1.25 0 0 0 0-2.5z" stroke="currentColor" stroke-width="1.2"/></svg>
-      </a>
-      <a href="https://x.com/lawstcause" aria-label="X" title="X">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M18 3h3l-7 8l7 10h-3l-5.5-7l-5 7H4l6.5-8.5L4 3h3l5 6.8L18 3z" stroke="currentColor" stroke-width="1.2"/></svg>
-      </a>
-    </nav>
-  </header>
-
-  <main class="container" aria-label="Intro">
-    <h1 class="title">Just My Luck</h1>
-    <p class="subtitle">On loop. Because of course it is.</p>
-
-    <div class="media" aria-label="Looping clip">
-      <!--
-        Recommended (tiny + smooth): MP4 loop
-        Put this file in your repo next to index.html:
-          justmyluck-loop-480.mp4
-
-        Optional fallback GIF (bigger file):
-          justmyluck-loop-480.gif
-      -->
-      <video autoplay loop muted playsinline preload="auto">
-        <source src="justmyluck-loop-480.mp4" type="video/mp4" />
-        <img src="justmyluck-loop-480.gif" alt="A short unlucky moment, looping." />
-      </video>
-    </div>
-  </main>
-
-  <footer>
-    <div class="container">
-      <p>© <span id="year"></span> Just My Luck</p>
-    </div>
-  </footer>
-
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
-
-<!-- deploy: Wed Feb  4 10:45:04 MST 2026 -->
