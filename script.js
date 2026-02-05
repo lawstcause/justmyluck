@@ -257,3 +257,37 @@ document.addEventListener('click', () => {
 window.addEventListener('resize', () => {
   seedPositions();
 });
+
+const contactForm = document.getElementById('contact-form');
+const formStatus = document.getElementById('form-status');
+
+if (contactForm) {
+  contactForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(contactForm);
+    const email = String(formData.get('email') || '').trim();
+    if (!email) return;
+
+    const apiBase = contactForm.dataset.api || 'http://localhost:3000';
+    formStatus.textContent = 'Sending...';
+
+    try {
+      const response = await fetch(`${apiBase}/api/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'landing-page' })
+      });
+      const data = await response.json();
+      if (data.status === 'ok') {
+        formStatus.textContent = 'You are in. Luck is on the way.';
+        contactForm.reset();
+      } else if (data.status === 'exists') {
+        formStatus.textContent = 'Already on the list. Stay lucky.';
+      } else {
+        formStatus.textContent = 'Something went wrong. Try again.';
+      }
+    } catch (err) {
+      formStatus.textContent = 'Could not connect. Try again later.';
+    }
+  });
+}
