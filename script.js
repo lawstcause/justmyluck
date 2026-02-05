@@ -104,6 +104,13 @@ function pickPosition(dice) {
   return { x, y };
 }
 
+function isTooClose(a, b, minDistance) {
+  if (!a || !b) return false;
+  const dx = a.x - b.x;
+  const dy = a.y - b.y;
+  return Math.hypot(dx, dy) < minDistance;
+}
+
 function placeDice(dice, x, y) {
   const tiltX = randomInt(-18, 18);
   const tiltY = randomInt(-18, 18);
@@ -112,7 +119,7 @@ function placeDice(dice, x, y) {
   dice.dataset.y = y;
 }
 
-function animateDice(dice) {
+function animateDice(dice, avoidPoint) {
   const stageRect = stage.getBoundingClientRect();
   const diceRect = dice.getBoundingClientRect();
   const padding = 24;
@@ -122,7 +129,15 @@ function animateDice(dice) {
 
   const currentX = Number(dice.dataset.x || padding);
   const currentY = Number(dice.dataset.y || padding);
-  const { x: targetX, y: targetY } = pickPosition(dice);
+  let target = pickPosition(dice);
+  const minDistance = diceRect.width * 0.9;
+  let attempts = 0;
+  while (avoidPoint && isTooClose(target, avoidPoint, minDistance) && attempts < 12) {
+    target = pickPosition(dice);
+    attempts += 1;
+  }
+  const targetX = target.x;
+  const targetY = target.y;
 
   const hop1 = {
     x: clamp(targetX + randomInt(-120, 120), padding, Math.max(padding, Math.floor(maxX))),
@@ -199,10 +214,21 @@ function rollDice() {
   const value = pickNewValue();
   playRollSound();
 
-  diceEls.forEach((dice) => {
-    animateDice(dice);
-    animateCubeToValue(dice, value);
-  });
+  const firstDice = diceEls[0];
+  const secondDice = diceEls[1];
+  const stageRect = stage.getBoundingClientRect();
+  if (stageRect.width < 260) {
+    animateDice(firstDice);
+    animateDice(secondDice);
+  } else {
+    animateDice(firstDice);
+    const avoidPoint = {
+      x: Number(firstDice.dataset.x),
+      y: Number(firstDice.dataset.y)
+    };
+    animateDice(secondDice, avoidPoint);
+  }
+  diceEls.forEach((dice) => animateCubeToValue(dice, value));
 
   setTimeout(() => {
     rolling = false;
