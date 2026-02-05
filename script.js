@@ -37,41 +37,57 @@ function playRollSound() {
   }
 
   const now = audioCtx.currentTime;
-  const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.35, audioCtx.sampleRate);
-  const noiseData = noiseBuffer.getChannelData(0);
-  for (let i = 0; i < noiseData.length; i += 1) {
-    noiseData[i] = Math.random() * 2 - 1;
+
+  function makeNoiseBuffer(duration) {
+    const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * duration, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i += 1) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    return buffer;
   }
 
-  const noise = audioCtx.createBufferSource();
-  noise.buffer = noiseBuffer;
+  function rattleBurst(startTime, duration, gainValue, highpassFreq) {
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = makeNoiseBuffer(duration);
 
-  const noiseFilter = audioCtx.createBiquadFilter();
-  noiseFilter.type = 'highpass';
-  noiseFilter.frequency.setValueAtTime(600, now);
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.setValueAtTime(highpassFreq, startTime);
 
-  const noiseGain = audioCtx.createGain();
-  noiseGain.gain.setValueAtTime(0.0001, now);
-  noiseGain.gain.exponentialRampToValueAtTime(0.25, now + 0.02);
-  noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.32);
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.exponentialRampToValueAtTime(gainValue, startTime + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
 
-  const tone = audioCtx.createOscillator();
-  tone.type = 'triangle';
-  tone.frequency.setValueAtTime(520, now);
-  tone.frequency.exponentialRampToValueAtTime(260, now + 0.22);
+    noise.connect(filter).connect(gain).connect(audioCtx.destination);
+    noise.start(startTime);
+    noise.stop(startTime + duration + 0.02);
+  }
 
-  const toneGain = audioCtx.createGain();
-  toneGain.gain.setValueAtTime(0.0001, now);
-  toneGain.gain.exponentialRampToValueAtTime(0.18, now + 0.04);
-  toneGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+  function thud(startTime, freq, duration, gainValue) {
+    const osc = audioCtx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, startTime);
+    osc.frequency.exponentialRampToValueAtTime(freq * 0.6, startTime + duration);
 
-  noise.connect(noiseFilter).connect(noiseGain).connect(audioCtx.destination);
-  tone.connect(toneGain).connect(audioCtx.destination);
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.0001, startTime);
+    gain.gain.exponentialRampToValueAtTime(gainValue, startTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
 
-  noise.start(now);
-  tone.start(now);
-  noise.stop(now + 0.36);
-  tone.stop(now + 0.32);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(startTime);
+    osc.stop(startTime + duration + 0.02);
+  }
+
+  // A few quick rattles followed by a couple of thuds feels like dice.
+  rattleBurst(now, 0.18, 0.22, 800);
+  rattleBurst(now + 0.12, 0.18, 0.18, 1200);
+  rattleBurst(now + 0.26, 0.16, 0.14, 1600);
+
+  thud(now + 0.28, 220, 0.14, 0.18);
+  thud(now + 0.4, 180, 0.12, 0.14);
 }
 
 function pickPosition(dice) {
