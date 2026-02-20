@@ -261,6 +261,13 @@ window.addEventListener('resize', () => {
 const contactForm = document.getElementById('contact-form');
 const formStatus = document.getElementById('form-status');
 
+function getApiBase() {
+  const host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:3000';
+  if (host.endsWith('justmyluck.wtf') || host.endsWith('github.io')) return 'https://api.justmyluck.wtf';
+  return 'https://api.justmyluck.wtf';
+}
+
 if (contactForm) {
   contactForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -268,14 +275,15 @@ if (contactForm) {
     const email = String(formData.get('email') || '').trim();
     if (!email) return;
 
-    const apiBase = contactForm.dataset.api || 'http://localhost:3000';
+    const apiBase = getApiBase();
     formStatus.textContent = 'Sending...';
+    const website = String(formData.get('website') || '');
 
     try {
       const response = await fetch(`${apiBase}/api/subscribe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'landing-page' })
+        body: JSON.stringify({ email, source: 'landing-page', website })
       });
       const data = await response.json();
       if (data.status === 'ok') {

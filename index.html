@@ -114,8 +114,16 @@
           <h2>Feeling lucky? Get in touch.</h2>
           <p>Drop your email and we will send you the next roll.</p>
         </div>
-        <form class="contact-form" id="contact-form" data-api="http://localhost:3000">
+        <form class="contact-form" id="contact-form">
           <input type="email" name="email" placeholder="you@example.com" required />
+          <input
+            type="text"
+            name="website"
+            tabindex="-1"
+            autocomplete="off"
+            class="hp-field"
+            aria-hidden="true"
+          />
           <button type="submit">Send me luck</button>
           <span class="form-status" id="form-status" aria-live="polite"></span>
         </form>

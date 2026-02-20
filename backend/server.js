@@ -2,6 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const sqlite3 = require('sqlite3').verbose();
 const nodemailer = require('nodemailer');
 
@@ -30,6 +32,15 @@ db.serialize(() => {
 });
 
 app.use(express.json());
+app.use(helmet({ crossOriginResourcePolicy: false }));
+
+const subscribeLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { status: 'error', message: 'Too many attempts. Try again shortly.' }
+});
 
 app.use(
   cors({
@@ -42,6 +53,10 @@ app.use(
 );
 
 app.get('/', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
+app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
@@ -64,11 +79,17 @@ function createTransporter() {
 
 const transporter = createTransporter();
 
-app.post('/api/subscribe', (req, res) => {
+app.post('/api/subscribe', subscribeLimiter, (req, res) => {
   const email = String(req.body.email || '').trim().toLowerCase();
   const source = String(req.body.source || 'site').trim();
+  const website = String(req.body.website || '').trim();
 
-  if (!emailRegex.test(email)) {
+  // Honeypot trap for basic bot traffic.
+  if (website) {
+    return res.json({ status: 'ok' });
+  }
+
+  if (!emailRegex.test(email) || source.length > 80) {
     return res.status(400).json({ status: 'error', message: 'Invalid email' });
   }
 
