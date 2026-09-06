@@ -1,80 +1,158 @@
-import { FormEvent, useState } from 'react';
+import { CSSProperties, FormEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { pickOne } from '../rng';
 import { saveHistory } from '../storage';
+
+const LINE_Y = [
+  16.761, 19.93, 23.099, 26.268, 29.507, 32.746, 35.915, 39.085, 42.254, 45.493, 48.662, 51.831, 55,
+  58.169, 61.338, 64.577, 67.676, 70.915, 74.155, 77.394, 80.704, 83.944, 87.113,
+];
+
+const REST_PEN = { left: -6, top: 38 };
+const PEN_TRAVEL_MS = 820;
 
 export function Names() {
   const [names, setNames] = useState<string[]>([]);
   const [draft, setDraft] = useState('');
   const [winner, setWinner] = useState<string | null>(null);
   const [circling, setCircling] = useState(false);
+  const [circled, setCircled] = useState(false);
+  const [pen, setPen] = useState(REST_PEN);
+
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const nameRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const timer = useRef<number>(0);
+
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+
+  useLayoutEffect(() => {
+    if (!winner) {
+      setPen(REST_PEN);
+      return;
+    }
+    const sheet = sheetRef.current;
+    const index = names.indexOf(winner);
+    const el = index >= 0 ? nameRefs.current[index] : null;
+    if (!sheet || !el) return;
+    const page = sheet.getBoundingClientRect();
+    const box = el.getBoundingClientRect();
+    setPen({
+      left: ((box.left + box.width + 10 - page.left) / page.width) * 100,
+      top: ((box.top + box.height * 0.52 - page.top) / page.height) * 100,
+    });
+  }, [winner, names, circled]);
 
   function addName(event?: FormEvent) {
     event?.preventDefault();
     const next = draft.trim();
-    if (!next) return;
+    if (!next || names.length >= LINE_Y.length) return;
     const exists = names.some((name) => name.toLowerCase() === next.toLowerCase());
-    if (exists) {
-      setDraft('');
-      return;
-    }
-    setNames((current) => [...current, next]);
     setDraft('');
+    if (exists) return;
+    setNames((current) => [...current, next]);
     setWinner(null);
+    setCircled(false);
+    setCircling(false);
   }
 
   function choose() {
     if (names.length < 2 || circling) return;
+    const next = pickOne(names);
+    setWinner(next);
+    setCircled(false);
     setCircling(true);
-    setWinner(null);
-    window.setTimeout(() => {
-      const next = pickOne(names);
-      setWinner(next);
+    window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => {
+      setCircled(true);
       setCircling(false);
       saveHistory({ at: Date.now(), tool: 'names', result: next });
-    }, 280);
+    }, PEN_TRAVEL_MS);
   }
+
+  function refresh() {
+    window.clearTimeout(timer.current);
+    setNames([]);
+    setDraft('');
+    setWinner(null);
+    setCircled(false);
+    setCircling(false);
+    setPen(REST_PEN);
+  }
+
+  const full = names.length >= LINE_Y.length;
+  const liveDraft = !full && draft.trim() ? draft.trim() : '';
 
   return (
     <div className="names-page">
       <div className="names-desk" aria-hidden="true" />
 
       <div className="names-hud">
-        <button className="back" type="button" onClick={() => { window.location.hash = '#/'; }}>
+        <button
+          className="back"
+          type="button"
+          onClick={() => {
+            window.location.hash = '#/';
+          }}
+        >
           ← justmyluck.wtf
+        </button>
+        <button className="ghost names-refresh" onClick={refresh} type="button">
+          Refresh
         </button>
       </div>
 
       <div className="sheet-stage">
-        <img alt="" className="pencil-prop" src={`${import.meta.env.BASE_URL}paper/pencil.png`} />
-        <div className="sheet-wrap">
-          <img alt="Notebook paper" className="sheet-img" src={`${import.meta.env.BASE_URL}paper/sheet.jpg`} />
+        <div className="sheet-wrap" ref={sheetRef}>
+          <img alt="Notebook paper" className="sheet-img" src={`${import.meta.env.BASE_URL}paper/sheet.png`} />
           <ol className="sheet-lines">
             {names.map((name, index) => (
               <li
-                className={winner === name ? 'ink winner' : 'ink'}
+                className={winner === name && circled ? 'ink winner' : 'ink'}
                 key={`${name}-${index}`}
-                style={{ transform: `rotate(${((index * 17) % 5) - 2}deg)` }}
+                style={
+                  {
+                    '--line-y': `${LINE_Y[index]}%`,
+                    '--tilt': `${((index * 17) % 5) - 2}deg`,
+                  } as CSSProperties
+                }
               >
-                {name}
-                {winner === name ? (
-                  <svg aria-hidden="true" className="red-circle" viewBox="0 0 120 40">
-                    <ellipse cx="60" cy="20" rx="54" ry="16" />
-                  </svg>
-                ) : null}
+                <span
+                  ref={(node) => {
+                    nameRefs.current[index] = node;
+                  }}
+                >
+                  {name}
+                  {winner === name && circled ? (
+                    <svg aria-hidden="true" className="red-circle" viewBox="0 0 120 40">
+                      <ellipse cx="60" cy="20" rx="54" ry="16" />
+                    </svg>
+                  ) : null}
+                </span>
               </li>
             ))}
-            {draft.trim() ? (
-              <li className="ink draft" style={{ transform: 'rotate(-0.6deg)' }}>
-                {draft}
+            {liveDraft ? (
+              <li
+                className="ink draft"
+                style={
+                  {
+                    '--line-y': `${LINE_Y[names.length]}%`,
+                    '--tilt': '-0.6deg',
+                  } as CSSProperties
+                }
+              >
+                <span>{liveDraft}</span>
               </li>
             ) : null}
           </ol>
+
+          <div
+            className={`pen-anchor${winner ? ' is-circling' : ''}`}
+            style={{ left: `${pen.left}%`, top: `${pen.top}%` }}
+          >
+            <img alt="" className="pen-prop" src={`${import.meta.env.BASE_URL}paper/pen.png`} />
+          </div>
+
+          <img alt="" className="pencil-prop" src={`${import.meta.env.BASE_URL}paper/pencil.png`} />
         </div>
-        <img
-          alt=""
-          className={`pen-prop${winner ? ' pen-ready' : ''}`}
-          src={`${import.meta.env.BASE_URL}paper/pen.png`}
-        />
       </div>
 
       <form className="names-dock" onSubmit={addName}>
@@ -83,12 +161,15 @@ export function Names() {
           autoFocus
           onChange={(event) => {
             setDraft(event.target.value);
-            if (winner) setWinner(null);
+            if (winner) {
+              setWinner(null);
+              setCircled(false);
+            }
           }}
-          placeholder="Type a name, press return"
+          placeholder={full ? 'Paper is full — refresh' : 'Type a name, press return'}
           value={draft}
         />
-        <button className="ghost" type="submit">
+        <button className="ghost" disabled={full} type="submit">
           Add
         </button>
         <button className="primary" disabled={names.length < 2 || circling} onClick={choose} type="button">
