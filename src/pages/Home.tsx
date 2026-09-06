@@ -1,7 +1,7 @@
 import { loadHistory } from '../storage';
 
 const TOOLS = [
-  { id: 'names', title: 'Names', deck: 'Paste a list. Luck picks who.' },
+  { id: 'names', title: 'Names', deck: 'Write them on the paper. Luck circles one.' },
   { id: 'coin', title: 'Heads or Tails', deck: 'The quarter. One tap.' },
   { id: 'yesno', title: 'Yes / No', deck: 'Press your luck. Its own coin.' },
   { id: 'action', title: 'Action', deck: 'A list of things to do. Luck picks the next one.' },

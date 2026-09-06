@@ -3,6 +3,7 @@ import { HOUSE_DECK } from './actions';
 import { Flip } from './pages/Flip';
 import { Home } from './pages/Home';
 import { ListPick } from './pages/ListPick';
+import { Names } from './pages/Names';
 
 type ToolId = 'home' | 'names' | 'coin' | 'yesno' | 'action';
 
@@ -28,7 +29,7 @@ export default function App() {
     window.location.hash = id === 'home' ? '#/' : `#/${id}`;
   }
 
-  const desk = route === 'coin' || route === 'yesno';
+  const desk = route === 'coin' || route === 'yesno' || route === 'names';
 
   return (
     <div className={`shell${desk ? ' shell-desk' : ''}`}>
@@ -58,30 +59,21 @@ export default function App() {
           tool="yesno"
         />
       ) : null}
-      {route === 'names' || route === 'action' ? (
+      {route === 'names' ? <Names /> : null}
+      {route === 'action' ? (
         <div className="page">
           <button className="back" onClick={() => go('home')} type="button">
             ← justmyluck.wtf
           </button>
-          {route === 'names' ? (
-            <ListPick
-              kicker="names"
-              lede="One name per line. Raffles, who pays, who stays late, who talks first."
-              placeholder={'Ada\nBill\nCy'}
-              title="Who."
-              tool="names"
-            />
-          ) : (
-            <ListPick
-              kicker="action"
-              lede="Write the options, or load a starter deck of useful next moves. Luck picks one. You do that."
-              placeholder={'Walk\nCook\nSend the email\nGo to bed'}
-              seedLabel="Load starter deck"
-              seedList={HOUSE_DECK.join('\n')}
-              title="Do this."
-              tool="action"
-            />
-          )}
+          <ListPick
+            kicker="action"
+            lede="Write the options, or load a starter deck of useful next moves. Luck picks one. You do that."
+            placeholder={'Walk\nCook\nSend the email\nGo to bed'}
+            seedLabel="Load starter deck"
+            seedList={HOUSE_DECK.join('\n')}
+            title="Do this."
+            tool="action"
+          />
         </div>
       ) : null}
     </div>

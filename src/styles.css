@@ -229,8 +229,172 @@ button { cursor: pointer; }
   background: rgba(20, 14, 8, 0.72);
 }
 
+@font-face {
+  font-family: 'Covered By Your Grace';
+  src: url('/fonts/CoveredByYourGrace-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.names-page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.names-desk {
+  position: fixed;
+  inset: 0;
+  background: #3a2416 url('/desk/wood.jpg') center / cover no-repeat;
+  z-index: 0;
+}
+
+.names-hud {
+  position: relative;
+  z-index: 3;
+  width: min(720px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 22px 0 0;
+}
+
+.sheet-stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 140px);
+  padding: 8px 12px 96px;
+}
+
+.sheet-wrap {
+  position: relative;
+  width: min(460px, 86vw);
+  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.45));
+}
+
+.sheet-img {
+  width: 100%;
+  display: block;
+  pointer-events: none;
+}
+
+.sheet-lines {
+  position: absolute;
+  left: 17%;
+  right: 9%;
+  top: 13.5%;
+  bottom: 7%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: hidden;
+}
+
+.sheet-lines .ink {
+  position: relative;
+  font-family: 'Covered By Your Grace', cursive;
+  font-size: clamp(1.45rem, 4.2vw, 2rem);
+  line-height: 1.72;
+  color: #2b241c;
+  transform-origin: left center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sheet-lines .draft {
+  opacity: 0.45;
+}
+
+.red-circle {
+  position: absolute;
+  left: -8%;
+  top: -18%;
+  width: 116%;
+  height: 140%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.red-circle ellipse {
+  fill: none;
+  stroke: #c41616;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  transform: rotate(-9deg);
+  transform-origin: 60px 20px;
+  stroke-dasharray: 280;
+  stroke-dashoffset: 280;
+  animation: circle-name 0.55s ease forwards;
+}
+
+@keyframes circle-name {
+  to { stroke-dashoffset: 0; }
+}
+
+.pencil-prop,
+.pen-prop {
+  position: absolute;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  z-index: 2;
+}
+
+.pencil-prop {
+  width: min(220px, 34vw);
+  right: 2%;
+  bottom: 18%;
+  transform: rotate(18deg);
+}
+
+.pen-prop {
+  width: min(240px, 36vw);
+  left: 1%;
+  top: 22%;
+  transform: rotate(-28deg);
+  opacity: 0.35;
+  transition: opacity 0.35s ease;
+}
+
+.pen-prop.pen-ready {
+  opacity: 1;
+}
+
+.names-dock {
+  position: fixed;
+  z-index: 4;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  width: min(720px, calc(100% - 20px));
+  display: flex;
+  gap: 8px;
+  background: rgba(20, 14, 8, 0.78);
+  border: 1px solid var(--line);
+  padding: 10px;
+}
+
+.names-dock input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  outline: none;
+  font-family: 'Covered By Your Grace', cursive;
+  font-size: 1.5rem;
+  color: #f3ead8;
+}
+
+.names-dock input::placeholder {
+  color: rgba(243, 234, 216, 0.4);
+}
+
 @media (max-width: 640px) {
   .page { width: min(100% - 24px, 720px); padding-top: 20px; }
   .grid { grid-template-columns: 1fr; }
-  .primary, .ghost { width: 100%; }
+  .primary, .ghost { width: auto; }
+  .names-dock .primary,
+  .names-dock .ghost { width: auto; }
+  .pencil-prop, .pen-prop { display: none; }
 }
