@@ -67,9 +67,9 @@ export default function App() {
           </button>
           <ListPick
             kicker="action"
-            lede="Write the options, or load a starter deck of useful next moves. Luck picks one. You do that."
+            lede="A thousand small good things, or write your own. Luck picks one. You do that."
             placeholder={'Walk\nCook\nSend the email\nGo to bed'}
-            seedLabel="Load starter deck"
+            seedLabel="Load the 1000"
             seedList={HOUSE_DECK.join('\n')}
             title="Do this."
             tool="action"

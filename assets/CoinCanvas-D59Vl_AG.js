@@ -1,4 +1,4 @@
-import{r as Sr,j as xl,p as vl}from"./index-Dce7_Mgx.js";/**
+import{r as Sr,j as xl,p as vl}from"./index-P9GoDeGk.js";/**
  * @license
  * Copyright 2010-2026 Three.js Authors
  * SPDX-License-Identifier: MIT
