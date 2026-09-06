@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/actions.ts","./src/main.tsx","./src/rng.ts","./src/storage.ts","./src/vite-env.d.ts","./src/coin/coincanvas.tsx","./src/coin/badtv.ts","./src/pages/flip.tsx","./src/pages/home.tsx","./src/pages/listpick.tsx"],"version":"5.9.3"}
+{"root":["./src/app.tsx","./src/actions.ts","./src/main.tsx","./src/rng.ts","./src/storage.ts","./src/vite-env.d.ts","./src/coin/coincanvas.tsx","./src/coin/lightning.ts","./src/pages/flip.tsx","./src/pages/home.tsx","./src/pages/listpick.tsx"],"version":"5.9.3"}

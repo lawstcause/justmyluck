@@ -5,20 +5,23 @@ import {
   Color,
   CylinderGeometry,
   DirectionalLight,
+  LineBasicMaterial,
   Mesh,
-  MeshStandardMaterial,
+  MeshPhysicalMaterial,
   PerspectiveCamera,
+  PlaneGeometry,
+  PMREMGenerator,
+  PointLight,
   RepeatWrapping,
   Scene,
   SRGBColorSpace,
   TextureLoader,
-  Vector2,
+  Vector3,
   WebGLRenderer,
 } from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-import { BadTVShader } from './badtv';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { Reflector } from 'three/addons/objects/Reflector.js';
+import { makeBolt, scatterBolts } from './lightning';
 
 type CoinCanvasProps = {
   spinning: boolean;
@@ -26,20 +29,19 @@ type CoinCanvasProps = {
   onFlip: () => void;
 };
 
-const HEADS_X = -Math.PI / 2;
-const TAILS_X = Math.PI / 2;
+const HEADS_X = Math.PI / 2;
+const TAILS_X = -Math.PI / 2;
 const FLIP_MS = 1150;
+const ORANGE = 0xff4d00;
 
 function asset(name: string) {
-  const base = import.meta.env.BASE_URL;
-  return `${base}coin/${name}`;
+  return `${import.meta.env.BASE_URL}coin/${name}`;
 }
 
 export function CoinCanvas({ spinning, face, onFlip }: CoinCanvasProps) {
   const host = useRef<HTMLButtonElement>(null);
   const spinRef = useRef(spinning);
   const faceRef = useRef(face);
-  const strengthRef = useRef(0.14);
 
   spinRef.current = spinning;
   faceRef.current = face;
@@ -52,13 +54,17 @@ export function CoinCanvas({ spinning, face, onFlip }: CoinCanvasProps) {
     const scene = new Scene();
     scene.background = new Color(0x0b0a09);
 
-    const camera = new PerspectiveCamera(32, 1, 0.1, 40);
-    camera.position.set(0, 0.35, 4.6);
+    const camera = new PerspectiveCamera(28, 1, 0.1, 50);
+    camera.position.set(0, 0.55, 5.2);
 
-    const renderer = new WebGLRenderer({ antialias: true, alpha: false });
+    const renderer = new WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x0b0a09, 1);
+    renderer.toneMappingExposure = 1.05;
     mount.appendChild(renderer.domElement);
+
+    const pmrem = new PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
     const loader = new TextureLoader();
     const headsMap = loader.load(asset('heads.jpg'));
@@ -69,31 +75,56 @@ export function CoinCanvas({ spinning, face, onFlip }: CoinCanvasProps) {
     edgeMap.colorSpace = SRGBColorSpace;
     edgeMap.wrapS = RepeatWrapping;
     edgeMap.wrapT = RepeatWrapping;
-    edgeMap.repeat.set(1, 1);
+
+    const physical = {
+      metalness: 0.85,
+      roughness: 0.22,
+      clearcoat: 1,
+      clearcoatRoughness: 0.12,
+      envMapIntensity: 1.15,
+    };
 
     const geo = new CylinderGeometry(1, 1, 0.085, 96);
-    const side = new MeshStandardMaterial({ map: edgeMap, metalness: 0.72, roughness: 0.32 });
-    const heads = new MeshStandardMaterial({ map: headsMap, metalness: 0.55, roughness: 0.38 });
-    const tails = new MeshStandardMaterial({ map: tailsMap, metalness: 0.55, roughness: 0.38 });
+    const side = new MeshPhysicalMaterial({ map: edgeMap, ...physical });
+    const heads = new MeshPhysicalMaterial({
+      map: headsMap,
+      ...physical,
+      emissive: new Color(ORANGE),
+      emissiveIntensity: 0,
+    });
+    const tails = new MeshPhysicalMaterial({
+      map: tailsMap,
+      ...physical,
+      emissive: new Color(ORANGE),
+      emissiveIntensity: 0,
+    });
     const coin = new Mesh(geo, [side, heads, tails]);
     coin.rotation.x = HEADS_X;
     scene.add(coin);
 
-    scene.add(new AmbientLight(0xc8b89a, 0.55));
-    const key = new DirectionalLight(0xfff4e0, 1.55);
-    key.position.set(2.4, 3.2, 4);
+    scene.add(new AmbientLight(ORANGE, 0.35));
+    const key = new DirectionalLight(0xfff4e8, 1.2);
+    key.position.set(2.6, 4.2, 3.4);
     scene.add(key);
-    const fill = new DirectionalLight(0x88a0b8, 0.35);
-    fill.position.set(-3, -1, 2);
+    const fill = new DirectionalLight(0x6a7c90, 0.28);
+    fill.position.set(-3.2, 0.4, 2);
     scene.add(fill);
-    const rim = new DirectionalLight(0xffe6b0, 0.45);
-    rim.position.set(-1.5, 2.5, -3);
-    scene.add(rim);
+    const flash = new PointLight(ORANGE, 0, 8, 2);
+    flash.position.set(0, 0.6, 1.4);
+    scene.add(flash);
 
-    const composer = new EffectComposer(renderer);
-    composer.addPass(new RenderPass(scene, camera));
-    const badtv = new ShaderPass(BadTVShader);
-    composer.addPass(badtv);
+    const ground = new Reflector(new PlaneGeometry(22, 22), {
+      clipBias: 0.003,
+      textureWidth: 1024,
+      textureHeight: 1024,
+      color: 0x1a1a1a,
+    });
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -1.08;
+    scene.add(ground);
+
+    const bolts = Array.from({ length: 7 }, () => makeBolt(new Vector3(), new Vector3(0, 1, 0)));
+    bolts.forEach((bolt) => scene.add(bolt));
 
     const clock = new Clock();
     let raf = 0;
@@ -103,15 +134,20 @@ export function CoinCanvas({ spinning, face, onFlip }: CoinCanvasProps) {
     let toZ = 0;
     let flipStart = -1;
     let lastSpinning = false;
+    let flashAmt = 0;
+    let landed = false;
+
+    function strike(origin: Vector3) {
+      flashAmt = 1;
+      scatterBolts(bolts, origin);
+    }
 
     function resize() {
       const w = mount.clientWidth;
       const h = mount.clientHeight;
       renderer.setSize(w, h, false);
-      composer.setSize(w, h);
       camera.aspect = w / Math.max(h, 1);
       camera.updateProjectionMatrix();
-      (badtv.uniforms.u_resolution.value as Vector2).set(w, h);
     }
 
     const ro = new ResizeObserver(resize);
@@ -128,8 +164,10 @@ export function CoinCanvas({ spinning, face, onFlip }: CoinCanvasProps) {
         const land = faceRef.current === 'tails' ? TAILS_X : HEADS_X;
         const extra = Math.PI * 2 * (5 + Math.floor(Math.random() * 2));
         toX = land + extra;
-        toZ = (Math.random() - 0.5) * 0.7;
+        toZ = (Math.random() - 0.5) * 0.55;
         flipStart = t;
+        landed = false;
+        strike(coin.position.clone().add(new Vector3(0, 0.2, 0.4)));
       }
       if (!spinningNow && lastSpinning) {
         coin.rotation.x = faceRef.current === 'tails' ? TAILS_X : HEADS_X;
@@ -143,20 +181,29 @@ export function CoinCanvas({ spinning, face, onFlip }: CoinCanvasProps) {
         const ease = 1 - Math.pow(1 - u, 3);
         coin.rotation.x = fromX + (toX - fromX) * ease;
         coin.rotation.z = fromZ + (toZ - fromZ) * Math.sin(u * Math.PI);
-        coin.position.y = Math.sin(u * Math.PI) * 0.45;
-        strengthRef.current += (0.72 - strengthRef.current) * 0.12;
+        coin.position.y = Math.sin(u * Math.PI) * 0.55;
+        if (u > 0.82 && !landed) {
+          landed = true;
+          strike(new Vector3(0, -0.2, 0.3));
+        }
       } else {
         const rest = faceRef.current === 'tails' ? TAILS_X : HEADS_X;
         coin.rotation.x += (rest - coin.rotation.x) * 0.12;
-        coin.rotation.y = Math.sin(t * 0.35) * 0.18;
+        coin.rotation.y = Math.sin(t * 0.32) * 0.16;
         coin.rotation.z += (0 - coin.rotation.z) * 0.1;
         coin.position.y += (0 - coin.position.y) * 0.12;
-        strengthRef.current += (0.13 - strengthRef.current) * 0.06;
       }
 
-      badtv.uniforms.u_time.value = t;
-      badtv.uniforms.u_strength.value = strengthRef.current;
-      composer.render();
+      flashAmt *= 0.9;
+      flash.intensity = flashAmt * 14;
+      heads.emissiveIntensity = flashAmt * 1.8;
+      tails.emissiveIntensity = flashAmt * 1.8;
+      for (const bolt of bolts) {
+        (bolt.material as LineBasicMaterial).opacity = flashAmt;
+        bolt.visible = flashAmt > 0.04;
+      }
+
+      renderer.render(scene, camera);
       raf = window.requestAnimationFrame(tick);
     }
 
@@ -166,7 +213,7 @@ export function CoinCanvas({ spinning, face, onFlip }: CoinCanvasProps) {
       window.cancelAnimationFrame(raf);
       ro.disconnect();
       renderer.dispose();
-      composer.dispose();
+      pmrem.dispose();
       geo.dispose();
       side.dispose();
       heads.dispose();
@@ -174,6 +221,11 @@ export function CoinCanvas({ spinning, face, onFlip }: CoinCanvasProps) {
       headsMap.dispose();
       tailsMap.dispose();
       edgeMap.dispose();
+      ground.geometry.dispose();
+      bolts.forEach((bolt) => {
+        bolt.geometry.dispose();
+        (bolt.material as LineBasicMaterial).dispose();
+      });
       renderer.domElement.remove();
     };
   }, []);
