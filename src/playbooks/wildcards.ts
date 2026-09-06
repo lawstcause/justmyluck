@@ -1,0 +1,50 @@
+import type { Hazard } from '../types';
+
+export const WILD_CARDS: Hazard[] = [
+  {
+    id: 'wild-keyholder',
+    name: 'The one person who “has the plan” gets food poisoning',
+    blurb: 'Luck likes to remove the human USB stick. If the night lives in one brain, that brain will be in a bathroom.',
+    counter: 'Write the plan down. Two people can run it without calling anyone.',
+    job: 'Whoever currently is the plan',
+    kind: 'cursed',
+    base: 22,
+    bump: [],
+  },
+  {
+    id: 'wild-charge',
+    name: 'The important battery dies at the worst sentence',
+    blurb: 'Mic, camera, door box, phone-as-playlist. It always dies mid-vow, mid-drop, or mid-“please hold.”',
+    counter: 'A charged spare in a labeled pouch, not “we’ll plug it in.”',
+    kind: 'annoying',
+    base: 22,
+    bump: [],
+  },
+  {
+    id: 'wild-ex',
+    name: 'Someone’s ex is on the list and nobody said so',
+    blurb: 'Luck does not RSVP. It just walks in with a plus-one and a history.',
+    counter: 'One adult asks the awkward question before doors. Seating is a tool.',
+    kind: 'annoying',
+    base: 20,
+    bump: [],
+  },
+  {
+    id: 'wild-double',
+    name: 'Your backup is also your main',
+    blurb: 'The spare cable is the cable already in use. The understudy is also on the first shift.',
+    counter: 'If it cannot fail independently, it is not a backup. Buy the second one.',
+    kind: 'cursed',
+    base: 24,
+    bump: [],
+  },
+  {
+    id: 'wild-groupchat',
+    name: 'The group chat becomes the run of show',
+    blurb: 'Luck loves a thread where the last message contradicts the second-to-last and nobody is looking.',
+    counter: 'One frozen document. The chat is for “I’m five minutes out,” not policy.',
+    kind: 'likely',
+    base: 26,
+    bump: [],
+  },
+];

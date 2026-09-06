@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Just My Luck</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="felt"></div>
+    <header class="site-header">
+      <div class="brand">Just My Luck</div>
+      <nav class="nav">
+        <a href="#roll">Roll</a>
+        <a href="#contact">Get in touch</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="tagline">Luck-engineered</p>
+        <h1>Roll with the universe on your side.</h1>
+        <p class="subhead">
+          Click anywhere to roll. The dice always land on a new matching pair.
+        </p>
+      </section>
+
+      <section class="roll-zone" id="roll">
+        <div class="roll-header">
+          <h2>Click anywhere to roll</h2>
+          <p>Two dice. One fate. Never the same pair twice.</p>
+        </div>
+        <div class="roll-stage" id="stage">
+          <div class="dice" id="dice-1" aria-label="Dice one">
+            <div class="cube">
+              <div class="face one">
+                <span class="pip p4"></span>
+              </div>
+              <div class="face two">
+                <span class="pip p1"></span>
+                <span class="pip p7"></span>
+              </div>
+              <div class="face three">
+                <span class="pip p1"></span>
+                <span class="pip p4"></span>
+                <span class="pip p7"></span>
+              </div>
+              <div class="face four">
+                <span class="pip p1"></span>
+                <span class="pip p3"></span>
+                <span class="pip p5"></span>
+                <span class="pip p7"></span>
+              </div>
+              <div class="face five">
+                <span class="pip p1"></span>
+                <span class="pip p3"></span>
+                <span class="pip p4"></span>
+                <span class="pip p5"></span>
+                <span class="pip p7"></span>
+              </div>
+              <div class="face six">
+                <span class="pip p1"></span>
+                <span class="pip p3"></span>
+                <span class="pip p2"></span>
+                <span class="pip p6"></span>
+                <span class="pip p5"></span>
+                <span class="pip p7"></span>
+              </div>
+            </div>
+          </div>
+          <div class="dice" id="dice-2" aria-label="Dice two">
+            <div class="cube">
+              <div class="face one">
+                <span class="pip p4"></span>
+              </div>
+              <div class="face two">
+                <span class="pip p1"></span>
+                <span class="pip p7"></span>
+              </div>
+              <div class="face three">
+                <span class="pip p1"></span>
+                <span class="pip p4"></span>
+                <span class="pip p7"></span>
+              </div>
+              <div class="face four">
+                <span class="pip p1"></span>
+                <span class="pip p3"></span>
+                <span class="pip p5"></span>
+                <span class="pip p7"></span>
+              </div>
+              <div class="face five">
+                <span class="pip p1"></span>
+                <span class="pip p3"></span>
+                <span class="pip p4"></span>
+                <span class="pip p5"></span>
+                <span class="pip p7"></span>
+              </div>
+              <div class="face six">
+                <span class="pip p1"></span>
+                <span class="pip p3"></span>
+                <span class="pip p2"></span>
+                <span class="pip p6"></span>
+                <span class="pip p5"></span>
+                <span class="pip p7"></span>
+              </div>
+            </div>
+          </div>
+          <span class="roll-hint">Tap to roll</span>
+        </div>
+      </section>
+
+      <section class="contact" id="contact">
+        <div>
+          <h2>Feeling lucky? Get in touch.</h2>
+          <p>Drop your email and we will send you the next roll.</p>
+        </div>
+        <form class="contact-form" id="contact-form">
+          <input type="email" name="email" placeholder="you@example.com" required />
+          <input
+            type="text"
+            name="website"
+            tabindex="-1"
+            autocomplete="off"
+            class="hp-field"
+            aria-hidden="true"
+          />
+          <button type="submit">Send me luck</button>
+          <span class="form-status" id="form-status" aria-live="polite"></span>
+        </form>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
