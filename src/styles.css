@@ -173,39 +173,22 @@ button { cursor: pointer; }
   line-height: 1.05;
 }
 
-.coin-wrap {
-  display: grid;
-  place-items: center;
+.coin-stage {
+  display: block;
   width: 100%;
-  background: transparent;
+  height: min(52vw, 380px);
+  margin: 8px 0 4px;
+  padding: 0;
   border: 0;
-  padding: 28px 0;
-  perspective: 900px;
+  background: transparent;
+  cursor: pointer;
 }
 
-.coin {
-  width: 168px;
-  height: 168px;
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform 0.9s cubic-bezier(0.2, 0.75, 0.2, 1);
+.coin-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
-
-.coin-face {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  backface-visibility: hidden;
-  border: 2px solid var(--amber);
-  background: var(--panel);
-  font-family: Fraunces, serif;
-  font-size: 1.6rem;
-  letter-spacing: -0.02em;
-}
-
-.tails { transform: rotateY(180deg); }
 
 @media (max-width: 640px) {
   .page { width: min(100% - 24px, 720px); padding-top: 20px; }

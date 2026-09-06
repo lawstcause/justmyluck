@@ -1,6 +1,10 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { pickOne } from '../rng';
 import { saveHistory } from '../storage';
+
+const CoinCanvas = lazy(() =>
+  import('../coin/CoinCanvas').then((mod) => ({ default: mod.CoinCanvas })),
+);
 
 type Face = { id: string; label: string };
 
@@ -15,29 +19,22 @@ type FlipProps = {
 
 export function Flip({ kicker, title, lede, faces, tool, verb }: FlipProps) {
   const [face, setFace] = useState<Face | null>(null);
-  const [turns, setTurns] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const [again, setAgain] = useState(false);
 
   function flip(reroll = false) {
     if (spinning) return;
-    setSpinning(true);
     const next = pickOne(faces);
-    setTurns((current) => {
-      const min = current + 10;
-      const parity = next.id === faces[0].id ? 0 : 1;
-      return min % 2 === parity ? min : min + 1;
-    });
-    setFace(null);
+    setSpinning(true);
+    setFace(next);
+    setAgain(reroll);
     window.setTimeout(() => {
-      setFace(next);
-      setAgain(reroll);
       setSpinning(false);
       saveHistory({ at: Date.now(), tool, result: next.label, reroll });
-    }, 900);
+    }, 1180);
   }
 
-  const deg = turns * 180;
+  const coinFace = !face ? 'heads' : face.id === faces[0].id ? 'heads' : 'tails';
 
   return (
     <div className="tool">
@@ -45,12 +42,9 @@ export function Flip({ kicker, title, lede, faces, tool, verb }: FlipProps) {
       <h1>{title}</h1>
       <p className="lede">{lede}</p>
 
-      <button className="coin-wrap" disabled={spinning} onClick={() => flip(Boolean(face))} type="button">
-        <span className="coin" style={{ transform: `rotateY(${deg}deg)` }}>
-          <span className="coin-face heads">{faces[0].label}</span>
-          <span className="coin-face tails">{faces[1].label}</span>
-        </span>
-      </button>
+      <Suspense fallback={<div className="coin-stage" />}>
+        <CoinCanvas face={coinFace} onFlip={() => flip(Boolean(face))} spinning={spinning} />
+      </Suspense>
 
       <div className="row">
         <button className="primary" disabled={spinning} onClick={() => flip(Boolean(face))} type="button">

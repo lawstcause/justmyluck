@@ -52,7 +52,7 @@ export default function App() {
                 { id: 'tails', label: 'Tails' },
               ]}
               kicker="coin"
-              lede="Same as a coin in a pocket. Louder."
+              lede="Washington in shades. Eagle, clover, just my luck. Tap the quarter."
               title="Heads or tails."
               tool="coin"
               verb="Flip"
