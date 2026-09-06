@@ -1,135 +1,91 @@
-import { useEffect, useMemo, useState } from 'react';
-import { buildReport } from './engine';
-import { Draw } from './pages/Draw';
+import { useEffect, useState } from 'react';
+import { HOUSE_DECK } from './actions';
+import { Flip } from './pages/Flip';
 import { Home } from './pages/Home';
-import { Quiz } from './pages/Quiz';
-import { ReportView } from './pages/ReportView';
-import { getPlaybook } from './playbooks';
-import { decodePayload, encodePayload, reportHash } from './share';
-import { saveRecentReport } from './storage';
-import type { Answers, Report } from './types';
+import { ListPick } from './pages/ListPick';
 
-type Route =
-  | { name: 'home' }
-  | { name: 'quiz'; id: string }
-  | { name: 'report'; payload: string }
-  | { name: 'draw' };
+type ToolId = 'home' | 'names' | 'coin' | 'yesno' | 'action';
 
-function parseHash(): Route {
-  const hash = window.location.hash.replace(/^#/, '') || '/';
-  const parts = hash.split('/').filter(Boolean);
-  if (parts[0] === 'c' && parts[1]) return { name: 'quiz', id: parts[1] };
-  if (parts[0] === 'r' && parts[1]) return { name: 'report', payload: parts[1] };
-  if (parts[0] === 'draw') return { name: 'draw' };
-  return { name: 'home' };
-}
-
-function go(hash: string) {
-  window.location.hash = hash;
+function parseHash(): ToolId {
+  const hash = window.location.hash.replace(/^#\/?/, '');
+  if (hash === 'names' || hash === 'coin' || hash === 'yesno' || hash === 'action') return hash;
+  return 'home';
 }
 
 export default function App() {
-  const [route, setRoute] = useState<Route>(() =>
-    typeof window === 'undefined' ? { name: 'home' } : parseHash(),
+  const [route, setRoute] = useState<ToolId>(() =>
+    typeof window === 'undefined' ? 'home' : parseHash(),
   );
 
   useEffect(() => {
     const onHash = () => setRoute(parseHash());
     window.addEventListener('hashchange', onHash);
-    if (!window.location.hash) {
-      window.location.replace('#/');
-    }
+    if (!window.location.hash) window.location.replace('#/');
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
-  const report: Report | null = useMemo(() => {
-    if (route.name !== 'report') return null;
-    const payload = decodePayload(route.payload);
-    if (!payload) return null;
-    const playbook = getPlaybook(payload.c);
-    if (!playbook) return null;
-    return buildReport(playbook, payload.a, payload.s, payload.t, payload.w);
-  }, [route]);
-
-  function openQuiz(id: string) {
-    go(`#/c/${id}`);
+  function go(id: ToolId) {
+    window.location.hash = id === 'home' ? '#/' : `#/${id}`;
   }
-
-  function submitQuiz(id: string, answers: Answers, situation: string) {
-    const playbook = getPlaybook(id);
-    if (!playbook) return;
-    const createdAt = Date.now();
-    const built = buildReport(playbook, answers, situation, createdAt);
-    const encoded = encodePayload({
-      c: id,
-      a: answers,
-      s: situation.trim(),
-      t: createdAt,
-      w: built.wild?.id,
-    });
-    saveRecentReport({
-      id: String(createdAt),
-      title: playbook.title,
-      situation: situation.trim(),
-      category: playbook.id,
-      createdAt,
-      payload: encoded,
-    });
-    go(reportHash(encoded));
-  }
-
-  const shareUrl =
-    route.name === 'report'
-      ? `${window.location.origin}${window.location.pathname}${reportHash(route.payload)}`
-      : '';
 
   return (
     <div className="shell">
       <div className="grain" aria-hidden="true" />
-      {route.name === 'home' ? (
-        <Home
-          onDraw={() => go('#/draw')}
-          onOpen={openQuiz}
-          onRecent={(payload) => go(reportHash(payload))}
-        />
-      ) : null}
-
-      {route.name === 'quiz' ? (
-        getPlaybook(route.id) ? (
-          <Quiz
-            onBack={() => go('#/')}
-            onSubmit={(answers, situation) => submitQuiz(route.id, answers, situation)}
-            playbook={getPlaybook(route.id)!}
-          />
-        ) : (
-          <div className="page">
-            <p>Unknown playbook.</p>
-            <button className="back" onClick={() => go('#/')} type="button">
-              ← Home
-            </button>
-          </div>
-        )
-      ) : null}
-
-      {route.name === 'report' ? (
-        report ? (
-          <ReportView
-            onAgain={() => go(`#/c/${report.playbook.id}`)}
-            onHome={() => go('#/')}
-            report={report}
-            shareUrl={shareUrl}
-          />
-        ) : (
-          <div className="page">
-            <p>This report link is broken. Luck ate the payload.</p>
-            <button className="back" onClick={() => go('#/')} type="button">
-              ← Home
-            </button>
-          </div>
-        )
-      ) : null}
-
-      {route.name === 'draw' ? <Draw onBack={() => go('#/')} /> : null}
+      {route !== 'home' ? (
+        <div className="page">
+          <button className="back" onClick={() => go('home')} type="button">
+            ← justmyluck.wtf
+          </button>
+          {route === 'names' ? (
+            <ListPick
+              kicker="names"
+              lede="One name per line. Raffles, who pays, who stays late, who talks first."
+              placeholder={'Ada\nBill\nCy'}
+              title="Who."
+              tool="names"
+            />
+          ) : null}
+          {route === 'coin' ? (
+            <Flip
+              faces={[
+                { id: 'heads', label: 'Heads' },
+                { id: 'tails', label: 'Tails' },
+              ]}
+              kicker="coin"
+              lede="Same as a coin in a pocket. Louder."
+              title="Heads or tails."
+              tool="coin"
+              verb="Flip"
+            />
+          ) : null}
+          {route === 'yesno' ? (
+            <Flip
+              faces={[
+                { id: 'yes', label: 'Yes' },
+                { id: 'no', label: 'No' },
+              ]}
+              kicker="yes / no"
+              lede="Do it or don’t. Stop rewriting the text."
+              title="Yes or no."
+              tool="yesno"
+              verb="Ask"
+            />
+          ) : null}
+          {route === 'action' ? (
+            <ListPick
+              kicker="action"
+              lede="Write the options, or load a starter deck of useful next moves. Luck picks one. You do that."
+              placeholder={'Walk\nCook\nSend the email\nGo to bed'}
+              seedLabel="Load starter deck"
+              seedList={HOUSE_DECK.join('\n')}
+              title="Do this."
+              tool="action"
+            />
+          ) : null}
+        </div>
+      ) : (
+        <Home onOpen={(id) => go(id)} />
+      )}
     </div>
   );
 }

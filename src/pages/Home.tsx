@@ -1,58 +1,55 @@
-import { PLAYBOOKS } from '../playbooks';
-import { loadRecentReports } from '../storage';
+import { loadHistory } from '../storage';
+
+const TOOLS = [
+  { id: 'names', title: 'Names', deck: 'Paste a list. Luck picks who.' },
+  { id: 'coin', title: 'Coin', deck: 'Heads or tails. One tap.' },
+  { id: 'yesno', title: 'Yes / No', deck: 'When you already know, and still won’t say it.' },
+  { id: 'action', title: 'Action', deck: 'A list of things to do. Luck picks the next one.' },
+] as const;
 
 type HomeProps = {
-  onOpen: (id: string) => void;
-  onDraw: () => void;
-  onRecent: (payload: string) => void;
+  onOpen: (id: (typeof TOOLS)[number]['id']) => void;
 };
 
-export function Home({ onOpen, onDraw, onRecent }: HomeProps) {
-  const recent = typeof window === 'undefined' ? [] : loadRecentReports();
+export function Home({ onOpen }: HomeProps) {
+  const history = typeof window === 'undefined' ? [] : loadHistory().slice(0, 6);
 
   return (
     <div className="page">
       <header className="hero">
         <p className="kicker">justmyluck.wtf</p>
         <h1>
-          Luck is coming.
-          <em> Here’s the list.</em>
+          Luck picks.
+          <em> You live with it.</em>
         </h1>
         <p className="lede">
-          Tell it what you’re about to do. It ranks how luck will try to break the night, and
-          gives you a counter for each. Under two minutes. No account. No homework.
+          Name picker, coin, yes or no, random action. No account. No essay. Tap and go.
         </p>
       </header>
 
-      <section className="grid" aria-label="Categories">
-        {PLAYBOOKS.map((playbook) => (
-          <button
-            className="card"
-            key={playbook.id}
-            onClick={() => onOpen(playbook.id)}
-            type="button"
-          >
-            <span className="card-id">{playbook.id.replace('-', ' ')}</span>
-            <strong>{playbook.title}</strong>
-            <span>{playbook.deck}</span>
+      <section className="grid" aria-label="Tools">
+        {TOOLS.map((tool) => (
+          <button className="card" key={tool.id} onClick={() => onOpen(tool.id)} type="button">
+            <strong>{tool.title}</strong>
+            <span>{tool.deck}</span>
           </button>
         ))}
       </section>
 
-      <button className="draw-link" onClick={onDraw} type="button">
-        Or skip the report — let luck pick a name
-      </button>
-
-      {recent.length > 0 ? (
+      {history.length > 0 ? (
         <section className="recent">
-          <h2>Recent reports on this device</h2>
+          <h2>On this phone</h2>
           <ul>
-            {recent.map((item) => (
-              <li key={item.id}>
-                <button onClick={() => onRecent(item.payload)} type="button">
-                  <b>{item.title}</b>
-                  <span>{item.situation || 'Untitled night'}</span>
-                </button>
+            {history.map((item) => (
+              <li key={item.at}>
+                <span>
+                  {item.result}
+                  <small>
+                    {' '}
+                    · {item.tool}
+                    {item.reroll ? ' · again' : ''}
+                  </small>
+                </span>
               </li>
             ))}
           </ul>

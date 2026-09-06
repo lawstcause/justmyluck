@@ -1,32 +1,24 @@
-import type { DrawRecord, RecentReport } from './types';
+export type HistoryItem = {
+  at: number;
+  tool: 'names' | 'coin' | 'yesno' | 'action';
+  result: string;
+  reroll?: boolean;
+};
 
-const REPORTS_KEY = 'jml-reports-v1';
-const DRAWS_KEY = 'jml-draws-v1';
+const KEY = 'jml-kit-v1';
 
-function readJson<T>(key: string, fallback: T): T {
+export function loadHistory(): HistoryItem[] {
   try {
-    const raw = window.localStorage.getItem(key);
-    if (!raw) return fallback;
-    return JSON.parse(raw) as T;
+    const raw = window.localStorage.getItem(KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as HistoryItem[];
+    return Array.isArray(parsed) ? parsed.slice(0, 20) : [];
   } catch {
-    return fallback;
+    return [];
   }
 }
 
-export function loadRecentReports(): RecentReport[] {
-  return readJson<RecentReport[]>(REPORTS_KEY, []).slice(0, 8);
-}
-
-export function saveRecentReport(entry: RecentReport) {
-  const next = [entry, ...loadRecentReports().filter((item) => item.id !== entry.id)].slice(0, 8);
-  window.localStorage.setItem(REPORTS_KEY, JSON.stringify(next));
-}
-
-export function loadDraws(): DrawRecord[] {
-  return readJson<DrawRecord[]>(DRAWS_KEY, []).slice(0, 12);
-}
-
-export function saveDraw(entry: DrawRecord) {
-  const next = [entry, ...loadDraws()].slice(0, 12);
-  window.localStorage.setItem(DRAWS_KEY, JSON.stringify(next));
+export function saveHistory(item: HistoryItem) {
+  const next = [item, ...loadHistory()].slice(0, 20);
+  window.localStorage.setItem(KEY, JSON.stringify(next));
 }

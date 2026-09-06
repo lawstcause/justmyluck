@@ -1,18 +1,10 @@
 # justmyluck.wtf
 
-Luck Report: you say what you’re about to do. The site ranks how luck will try to break it, with a counter for each.
-
-## Local
+Name picker, coin flip, yes/no, random action.
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Build
-
-```bash
-npm run build
-```
-
-`dist/` is the GitHub Pages site. Keep the `CNAME` file as `justmyluck.wtf` when publishing to `lawstcause/justmyluck`.
+GitHub Pages serves the built `dist/` files from the repo root (`index.html` + `assets/`).

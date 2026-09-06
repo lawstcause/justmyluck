@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "pages": "npm run build && echo 'Copy dist/index.html and dist/assets onto the GitHub repo root, then push.'"
   },
   "dependencies": {
     "react": "^18.3.1",
