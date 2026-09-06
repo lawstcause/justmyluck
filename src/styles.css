@@ -378,24 +378,25 @@ button { cursor: pointer; }
   position: absolute;
   left: 0;
   top: 0;
-  width: min(148px, 30vw);
+  width: min(210px, 42vw);
   height: auto;
-  transform: translate(-2.4%, -99.3%) rotate(-34deg);
-  transform-origin: 2.4% 99.3%;
+  transform: translate(-6.05%, -97.85%) rotate(-34deg);
+  transform-origin: 6.05% 97.85%;
   transition: transform 0.82s cubic-bezier(0.22, 0.82, 0.2, 1);
 }
 
 .pen-anchor.is-circling .pen-prop {
-  transform: translate(-2.4%, -99.3%) rotate(12deg);
+  transform: translate(-6.05%, -97.85%) rotate(12deg);
 }
 
 .pencil-prop {
   position: absolute;
-  width: min(132px, 26vw);
-  right: -11%;
-  bottom: 5%;
+  width: min(200px, 40vw);
+  right: -2%;
+  bottom: 4%;
   z-index: 4;
-  transform: rotate(24deg);
+  transform: rotate(22deg);
+  transform-origin: 4% 96%;
 }
 
 .names-dock {
@@ -435,6 +436,6 @@ button { cursor: pointer; }
   .names-dock .primary,
   .names-dock .ghost { width: auto; }
   .sheet-wrap { width: min(520px, 88vw); }
-  .pen-prop { width: min(110px, 28vw); }
-  .pencil-prop { width: min(96px, 24vw); right: -6%; }
+  .pen-prop { width: min(160px, 40vw); }
+  .pencil-prop { width: min(150px, 38vw); right: 0; }
 }

@@ -9,6 +9,8 @@ const LINE_Y = [
 
 const REST_PEN = { left: -6, top: 38 };
 const PEN_TRAVEL_MS = 820;
+const CIRCLE_MS = 550;
+const HOLD_MS = 420;
 
 export function Names() {
   const [names, setNames] = useState<string[]>([]);
@@ -16,6 +18,7 @@ export function Names() {
   const [winner, setWinner] = useState<string | null>(null);
   const [circling, setCircling] = useState(false);
   const [circled, setCircled] = useState(false);
+  const [penAtName, setPenAtName] = useState(false);
   const [pen, setPen] = useState(REST_PEN);
 
   const sheetRef = useRef<HTMLDivElement>(null);
@@ -25,7 +28,7 @@ export function Names() {
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   useLayoutEffect(() => {
-    if (!winner) {
+    if (!penAtName || !winner) {
       setPen(REST_PEN);
       return;
     }
@@ -39,7 +42,7 @@ export function Names() {
       left: ((box.left + box.width + 10 - page.left) / page.width) * 100,
       top: ((box.top + box.height * 0.52 - page.top) / page.height) * 100,
     });
-  }, [winner, names, circled]);
+  }, [penAtName, winner, names]);
 
   function addName(event?: FormEvent) {
     event?.preventDefault();
@@ -52,6 +55,7 @@ export function Names() {
     setWinner(null);
     setCircled(false);
     setCircling(false);
+    setPenAtName(false);
   }
 
   function choose() {
@@ -60,11 +64,15 @@ export function Names() {
     setWinner(next);
     setCircled(false);
     setCircling(true);
+    setPenAtName(true);
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => {
       setCircled(true);
-      setCircling(false);
       saveHistory({ at: Date.now(), tool: 'names', result: next });
+      timer.current = window.setTimeout(() => {
+        setPenAtName(false);
+        setCircling(false);
+      }, CIRCLE_MS + HOLD_MS);
     }, PEN_TRAVEL_MS);
   }
 
@@ -75,6 +83,7 @@ export function Names() {
     setWinner(null);
     setCircled(false);
     setCircling(false);
+    setPenAtName(false);
     setPen(REST_PEN);
   }
 
@@ -145,7 +154,7 @@ export function Names() {
           </ol>
 
           <div
-            className={`pen-anchor${winner ? ' is-circling' : ''}`}
+            className={`pen-anchor${penAtName ? ' is-circling' : ''}`}
             style={{ left: `${pen.left}%`, top: `${pen.top}%` }}
           >
             <img alt="" className="pen-prop" src={`${import.meta.env.BASE_URL}paper/pen.png`} />
@@ -164,6 +173,7 @@ export function Names() {
             if (winner) {
               setWinner(null);
               setCircled(false);
+              setPenAtName(false);
             }
           }}
           placeholder={full ? 'Paper is full — refresh' : 'Type a name, press return'}
