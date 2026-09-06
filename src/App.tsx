@@ -28,10 +28,37 @@ export default function App() {
     window.location.hash = id === 'home' ? '#/' : `#/${id}`;
   }
 
+  const desk = route === 'coin' || route === 'yesno';
+
   return (
-    <div className="shell">
-      <div className="grain" aria-hidden="true" />
-      {route !== 'home' ? (
+    <div className={`shell${desk ? ' shell-desk' : ''}`}>
+      {desk ? null : <div className="grain" aria-hidden="true" />}
+      {route === 'home' ? <Home onOpen={(id) => go(id)} /> : null}
+      {route === 'coin' ? (
+        <Flip
+          faces={[
+            { id: 'heads', label: 'Heads' },
+            { id: 'tails', label: 'Tails' },
+          ]}
+          kicker="heads or tails"
+          pack="quarter"
+          title="Heads or tails."
+          tool="coin"
+        />
+      ) : null}
+      {route === 'yesno' ? (
+        <Flip
+          faces={[
+            { id: 'yes', label: 'Yes' },
+            { id: 'no', label: 'No' },
+          ]}
+          kicker="yes / no"
+          pack="yesno"
+          title="Yes or no."
+          tool="yesno"
+        />
+      ) : null}
+      {route === 'names' || route === 'action' ? (
         <div className="page">
           <button className="back" onClick={() => go('home')} type="button">
             ← justmyluck.wtf
@@ -44,36 +71,7 @@ export default function App() {
               title="Who."
               tool="names"
             />
-          ) : null}
-          {route === 'coin' ? (
-            <Flip
-              faces={[
-                { id: 'heads', label: 'Heads' },
-                { id: 'tails', label: 'Tails' },
-              ]}
-              kicker="heads or tails"
-              lede="Washington in shades. Eagle, clover, just my luck. Tap the quarter."
-              pack="quarter"
-              title="Heads or tails."
-              tool="coin"
-              verb="Flip"
-            />
-          ) : null}
-          {route === 'yesno' ? (
-            <Flip
-              faces={[
-                { id: 'yes', label: 'Yes' },
-                { id: 'no', label: 'No' },
-              ]}
-              kicker="yes / no"
-              lede="Press your luck. Yes on one face, no on the other. Its own coin."
-              pack="yesno"
-              title="Yes or no."
-              tool="yesno"
-              verb="Ask"
-            />
-          ) : null}
-          {route === 'action' ? (
+          ) : (
             <ListPick
               kicker="action"
               lede="Write the options, or load a starter deck of useful next moves. Luck picks one. You do that."
@@ -83,11 +81,9 @@ export default function App() {
               title="Do this."
               tool="action"
             />
-          ) : null}
+          )}
         </div>
-      ) : (
-        <Home onOpen={(id) => go(id)} />
-      )}
+      ) : null}
     </div>
   );
 }
