@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import {
   AmbientLight,
   Clock,
-  Color,
   CylinderGeometry,
   DirectionalLight,
   Mesh,
@@ -16,6 +15,7 @@ import {
   TextureLoader,
   WebGLRenderer,
 } from 'three';
+import { pickOne } from '../rng';
 
 type CoinCanvasProps = {
   pack: 'quarter' | 'yesno';
@@ -131,18 +131,19 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
 
     function launch(strength: number, dir: number) {
       if (toss) return;
-      const power = Math.min(1, Math.max(0.22, strength));
-      const halfTurns = 2 + Math.round(power * 10);
+      const power = Math.min(1, Math.max(0.25, strength));
+      const face = pickOne(['heads', 'tails'] as const);
+      let halfTurns = 3 + Math.round(power * 8);
+      const same = face === restFace;
+      if (same && halfTurns % 2 === 1) halfTurns += 1;
+      if (!same && halfTurns % 2 === 0) halfTurns += 1;
       const sign = dir < 0 ? -1 : 1;
       const fromX = currentX();
-      const toX = fromX + sign * Math.PI * halfTurns;
-      const face: 'heads' | 'tails' =
-        Math.round(Math.abs(toX) / Math.PI) % 2 === 0 ? 'heads' : 'tails';
       toss = {
         start: clock.getElapsedTime(),
         duration: 0.65 + power * 0.7,
         fromX,
-        toX,
+        toX: fromX + sign * Math.PI * halfTurns,
         height: 1.28 + power * 1.35,
         face,
         strength: power,
@@ -155,21 +156,22 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
 
     function onDown(event: PointerEvent) {
       if (isUi(event.target) || toss) return;
+      if (event.pointerType === 'mouse' && event.button !== 0) return;
       pointer = { x: event.clientX, y: event.clientY, t: performance.now() };
       lastMove = { ...pointer };
     }
 
     function onMove(event: PointerEvent) {
       if (!pointer) return;
-      lastMove = { x: event.clientX, y: event.clientY, t: performance.now() };
-    }
-
-    function onUp(event: PointerEvent) {
-      if (!pointer || toss) {
+      if (event.pointerType === 'mouse' && event.buttons === 0) {
         pointer = null;
         return;
       }
-      if (isUi(event.target)) {
+      lastMove = { x: event.clientX, y: event.clientY, t: performance.now() };
+    }
+
+    function onUp() {
+      if (!pointer || toss) {
         pointer = null;
         return;
       }
@@ -189,6 +191,7 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
     window.addEventListener('pointerdown', onDown);
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
 
     function resize() {
       const w = mount.clientWidth;
@@ -207,9 +210,10 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
         const u = Math.min(1, (t - toss.start) / toss.duration);
         const ease = 1 - Math.pow(1 - u, 2.4);
         coin.rotation.x = toss.fromX + (toss.toX - toss.fromX) * ease;
-        coin.rotation.z = Math.sin(u * Math.PI) * 0.18 * toss.strength;
+        coin.rotation.z = 0;
+        coin.rotation.y = 0;
         coin.position.y = REST_Y + Math.sin(u * Math.PI) * toss.height;
-        coin.position.x = Math.sin(u * Math.PI * 2) * 0.08 * toss.strength;
+        coin.position.x = Math.sin(u * Math.PI) * 0.12 * toss.strength * (toss.toX < toss.fromX ? -1 : 1);
         if (u >= 1) {
           restFace = toss.face;
           coin.rotation.x = restFace === 'heads' ? HEADS : TAILS;
@@ -221,17 +225,15 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
       } else if (pointer) {
         const dx = lastMove.x - pointer.x;
         const dy = lastMove.y - pointer.y;
-        coin.rotation.x += (currentX() - coin.rotation.x) * 0.25;
-        coin.rotation.z += (0 - coin.rotation.z) * 0.25;
+        coin.rotation.set(currentX(), 0, 0);
         coin.position.x += (dx * 0.006 - coin.position.x) * 0.4;
         coin.position.z += (dy * 0.006 - coin.position.z) * 0.4;
         coin.position.y += (0.16 - coin.position.y) * 0.3;
       } else {
-        coin.rotation.x += (currentX() - coin.rotation.x) * 0.22;
-        coin.rotation.z += (0 - coin.rotation.z) * 0.22;
-        coin.position.x += (0 - coin.position.x) * 0.14;
-        coin.position.z += (0 - coin.position.z) * 0.14;
-        coin.position.y += (REST_Y - coin.position.y) * 0.22;
+        coin.rotation.set(currentX(), 0, 0);
+        coin.position.x += (0 - coin.position.x) * 0.16;
+        coin.position.z += (0 - coin.position.z) * 0.16;
+        coin.position.y = REST_Y;
       }
       renderer.render(scene, camera);
       raf = window.requestAnimationFrame(tick);
@@ -243,6 +245,7 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
       window.removeEventListener('pointerdown', onDown);
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
       ro.disconnect();
       renderer.dispose();
       geo.dispose();
