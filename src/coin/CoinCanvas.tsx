@@ -37,7 +37,11 @@ const ORANGE = 0xff4d00;
 
 function asset(pack: 'quarter' | 'yesno', name: string) {
   const folder = pack === 'yesno' ? 'coin/yesno' : 'coin';
-  return `${import.meta.env.BASE_URL}${folder}/${name}`;
+  const file =
+    pack === 'yesno'
+      ? { 'heads.jpg': 'yes.jpg', 'tails.jpg': 'no.jpg', 'edge.jpg': 'rim.jpg' }[name] ?? name
+      : name;
+  return `${import.meta.env.BASE_URL}${folder}/${file}`;
 }
 
 export function CoinCanvas({ spinning, face, onFlip, pack }: CoinCanvasProps) {
