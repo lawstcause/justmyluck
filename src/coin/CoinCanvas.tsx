@@ -27,6 +27,7 @@ type CoinCanvasProps = {
   spinning: boolean;
   face: 'heads' | 'tails' | null;
   onFlip: () => void;
+  pack: 'quarter' | 'yesno';
 };
 
 const HEADS_X = Math.PI / 2;
@@ -34,11 +35,12 @@ const TAILS_X = -Math.PI / 2;
 const FLIP_MS = 1150;
 const ORANGE = 0xff4d00;
 
-function asset(name: string) {
-  return `${import.meta.env.BASE_URL}coin/${name}`;
+function asset(pack: 'quarter' | 'yesno', name: string) {
+  const folder = pack === 'yesno' ? 'coin/yesno' : 'coin';
+  return `${import.meta.env.BASE_URL}${folder}/${name}`;
 }
 
-export function CoinCanvas({ spinning, face, onFlip }: CoinCanvasProps) {
+export function CoinCanvas({ spinning, face, onFlip, pack }: CoinCanvasProps) {
   const host = useRef<HTMLButtonElement>(null);
   const spinRef = useRef(spinning);
   const faceRef = useRef(face);
@@ -67,9 +69,9 @@ export function CoinCanvas({ spinning, face, onFlip }: CoinCanvasProps) {
     scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
     const loader = new TextureLoader();
-    const headsMap = loader.load(asset('heads.jpg'));
-    const tailsMap = loader.load(asset('tails.jpg'));
-    const edgeMap = loader.load(asset('edge.jpg'));
+    const headsMap = loader.load(asset(pack, 'heads.jpg'));
+    const tailsMap = loader.load(asset(pack, 'tails.jpg'));
+    const edgeMap = loader.load(asset(pack, 'edge.jpg'));
     headsMap.colorSpace = SRGBColorSpace;
     tailsMap.colorSpace = SRGBColorSpace;
     edgeMap.colorSpace = SRGBColorSpace;
@@ -228,7 +230,7 @@ export function CoinCanvas({ spinning, face, onFlip }: CoinCanvasProps) {
       });
       renderer.domElement.remove();
     };
-  }, []);
+  }, [pack]);
 
   return (
     <button

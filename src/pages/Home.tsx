@@ -2,8 +2,8 @@ import { loadHistory } from '../storage';
 
 const TOOLS = [
   { id: 'names', title: 'Names', deck: 'Paste a list. Luck picks who.' },
-  { id: 'coin', title: 'Coin', deck: 'Heads or tails. One tap.' },
-  { id: 'yesno', title: 'Yes / No', deck: 'When you already know, and still won’t say it.' },
+  { id: 'coin', title: 'Heads or Tails', deck: 'The quarter. One tap.' },
+  { id: 'yesno', title: 'Yes / No', deck: 'Press your luck. Its own coin.' },
   { id: 'action', title: 'Action', deck: 'A list of things to do. Luck picks the next one.' },
 ] as const;
 
@@ -23,7 +23,7 @@ export function Home({ onOpen }: HomeProps) {
           <em> You live with it.</em>
         </h1>
         <p className="lede">
-          Name picker, coin, yes or no, random action. No account. No essay. Tap and go.
+          Name picker, heads or tails, yes or no, random action. No account. No essay. Tap and go.
         </p>
       </header>
 

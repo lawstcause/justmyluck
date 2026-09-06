@@ -15,9 +15,10 @@ type FlipProps = {
   faces: [Face, Face];
   tool: 'coin' | 'yesno';
   verb: string;
+  pack: 'quarter' | 'yesno';
 };
 
-export function Flip({ kicker, title, lede, faces, tool, verb }: FlipProps) {
+export function Flip({ kicker, title, lede, faces, tool, verb, pack }: FlipProps) {
   const [face, setFace] = useState<Face | null>(null);
   const [spinning, setSpinning] = useState(false);
   const [again, setAgain] = useState(false);
@@ -43,7 +44,13 @@ export function Flip({ kicker, title, lede, faces, tool, verb }: FlipProps) {
       <p className="lede">{lede}</p>
 
       <Suspense fallback={<div className="coin-stage" />}>
-        <CoinCanvas face={coinFace} onFlip={() => flip(Boolean(face))} spinning={spinning} />
+        <CoinCanvas
+          key={pack}
+          face={coinFace}
+          onFlip={() => flip(Boolean(face))}
+          pack={pack}
+          spinning={spinning}
+        />
       </Suspense>
 
       <div className="row">

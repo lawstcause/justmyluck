@@ -51,8 +51,9 @@ export default function App() {
                 { id: 'heads', label: 'Heads' },
                 { id: 'tails', label: 'Tails' },
               ]}
-              kicker="coin"
+              kicker="heads or tails"
               lede="Washington in shades. Eagle, clover, just my luck. Tap the quarter."
+              pack="quarter"
               title="Heads or tails."
               tool="coin"
               verb="Flip"
@@ -65,7 +66,8 @@ export default function App() {
                 { id: 'no', label: 'No' },
               ]}
               kicker="yes / no"
-              lede="Do it or don’t. Stop rewriting the text."
+              lede="Press your luck. Yes on one face, no on the other. Its own coin."
+              pack="yesno"
               title="Yes or no."
               tool="yesno"
               verb="Ask"
