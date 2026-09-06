@@ -18,7 +18,7 @@ export function pickOne<T>(items: readonly T[]): T {
 export function parseList(raw: string): string[] {
   const seen = new Set<string>();
   const items: string[] = [];
-  for (const line of raw.split(/\n|,/)) {
+  for (const line of raw.split(/\n/)) {
     const item = line.trim();
     if (!item) continue;
     const key = item.toLowerCase();

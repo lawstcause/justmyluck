@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { HOUSE_DECK } from './actions';
+import { Action } from './pages/Action';
 import { Flip } from './pages/Flip';
 import { Home } from './pages/Home';
-import { ListPick } from './pages/ListPick';
 import { Names } from './pages/Names';
 
 type ToolId = 'home' | 'names' | 'coin' | 'yesno' | 'action';
@@ -61,19 +60,8 @@ export default function App() {
       ) : null}
       {route === 'names' ? <Names /> : null}
       {route === 'action' ? (
-        <div className="page">
-          <button className="back" onClick={() => go('home')} type="button">
-            ← justmyluck.wtf
-          </button>
-          <ListPick
-            kicker="action"
-            lede="A thousand small good things, or write your own. Luck picks one. You do that."
-            placeholder={'Walk\nCook\nSend the email\nGo to bed'}
-            seedLabel="Load the 1000"
-            seedList={HOUSE_DECK.join('\n')}
-            title="Do this."
-            tool="action"
-          />
+        <div className="page action-shell">
+          <Action />
         </div>
       ) : null}
     </div>
