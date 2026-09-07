@@ -100,12 +100,12 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
     coin.castShadow = true;
     scene.add(coin);
 
-    scene.add(new AmbientLight(0xffe6c4, 0.55));
-    const key = new DirectionalLight(0xfff1d6, 1.35);
+    scene.add(new AmbientLight(0xffe6c4, 0.82));
+    const key = new DirectionalLight(0xfff1d6, 1.42);
     key.position.set(3, 8, 4);
     key.castShadow = true;
     scene.add(key);
-    const fill = new DirectionalLight(0x6d5a44, 0.35);
+    const fill = new DirectionalLight(0x8a7360, 0.5);
     fill.position.set(-4, 3, -2);
     scene.add(fill);
 
