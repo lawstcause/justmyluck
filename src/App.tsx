@@ -37,7 +37,7 @@ export default function App() {
     window.location.hash = id === 'home' ? '#/' : `#/${id}`;
   }
 
-  const desk = route === 'coin' || route === 'scratch' || route === 'list' || route === 'action';
+  const desk = true;
 
   return (
     <div className={`shell${desk ? ' shell-desk' : ''}`}>

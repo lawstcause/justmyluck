@@ -77,156 +77,147 @@ button { cursor: pointer; }
   line-height: 1.55;
 }
 
-.home-page {
-  width: min(880px, calc(100% - 32px));
-  padding-bottom: 96px;
-}
-
-.home-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px 24px;
-  margin: 56px 0 0;
-}
-
-.tool-card {
+.home-desk-page {
   position: relative;
-  isolation: isolate;
-  text-align: left;
-  padding: 0;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.home-desk {
+  position: fixed;
+  inset: 0;
+  background: #3a2416 url('/desk/wood.jpg') center / cover no-repeat;
+  z-index: 0;
+}
+
+.home-stamp {
+  position: relative;
+  z-index: 3;
+  margin: 0;
+  padding: 18px 22px 0;
+  color: #e8c36a;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 11px;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.65);
+}
+
+.desk-top {
+  position: relative;
+  z-index: 1;
+  min-height: calc(100vh - 36px);
+}
+
+.desk-item {
+  position: absolute;
   border: 0;
   background: transparent;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
+  padding: 0;
   will-change: transform;
 }
 
-.tool-card:focus-visible {
-  outline: 1px solid var(--amber);
-  outline-offset: 8px;
+.desk-item:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 10px;
 }
 
-.tool-object {
+.desk-prop {
+  display: block;
+  filter: drop-shadow(0 16px 20px rgba(0, 0, 0, 0.48));
+}
+
+.desk-prop img {
   display: block;
   width: 100%;
-  aspect-ratio: 1 / 1.06;
-  overflow: hidden;
-  position: relative;
-}
-
-.tool-object img {
   pointer-events: none;
   user-select: none;
 }
 
-.tool-object-names {
-  background: #d8cbb8;
-  box-shadow: 0 20px 38px rgba(0, 0, 0, 0.46);
-  transform: rotate(-1.5deg);
+.desk-paper {
+  left: 6%;
+  top: 14%;
+  width: min(300px, 30vw);
+  z-index: 2;
 }
 
-.tool-object-names img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 50% 8%;
+.desk-paper .desk-prop {
+  position: relative;
+  transform: rotate(-8deg);
 }
 
-.tool-object-names em {
+.desk-paper em {
   position: absolute;
-  left: 16%;
-  top: 20%;
+  left: 18%;
+  top: 18%;
   font-family: Yuyu, cursive;
   font-style: normal;
   color: #2a2218;
-  font-size: clamp(1.5rem, 4.2vw, 2.3rem);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
   line-height: 1;
-  transform: rotate(-2.2deg);
-  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
+  transform: rotate(-3deg);
 }
 
-.tool-object-coin {
-  background: #3a2416 url('/desk/wood.jpg') center / cover no-repeat;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 20px 38px rgba(0, 0, 0, 0.5);
+.desk-coin {
+  left: 41%;
+  top: 40%;
+  width: min(168px, 17vw);
+  z-index: 4;
 }
 
-.tool-object-coin img {
-  width: 58%;
-  height: auto;
-  aspect-ratio: 1;
-  object-fit: cover;
-  border-radius: 50%;
-  filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.58));
+.desk-ticket {
+  right: 5%;
+  top: 8%;
+  width: min(320px, 32vw);
+  z-index: 3;
 }
 
-.tool-object-scratch {
-  background: #120e0a;
-  box-shadow: 0 20px 38px rgba(0, 0, 0, 0.5);
+.desk-ticket .desk-prop {
+  transform: rotate(6deg);
 }
 
-.tool-object-scratch img {
-  width: 100%;
-  height: 140%;
-  object-fit: cover;
-  object-position: 50% 6%;
-  transform: translateY(-4%);
+.desk-board {
+  left: 18%;
+  bottom: 7%;
+  width: min(460px, 52vw);
+  z-index: 3;
 }
 
-.tool-object-action {
+.desk-board .desk-prop {
+  transform: rotate(-2.5deg);
+}
+
+.desk-board-prop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 16px 18px 14px;
   background:
     radial-gradient(circle at 12px 12px, #6a6a6a 0 4px, transparent 5px),
     radial-gradient(circle at calc(100% - 12px) 12px, #6a6a6a 0 4px, transparent 5px),
     radial-gradient(circle at 12px calc(100% - 12px), #6a6a6a 0 4px, transparent 5px),
     radial-gradient(circle at calc(100% - 12px) calc(100% - 12px), #6a6a6a 0 4px, transparent 5px),
     linear-gradient(180deg, #3a3a3a, #141414);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 18px 14px;
-  box-shadow: 0 20px 38px rgba(0, 0, 0, 0.5);
+  border: 1px solid #111;
+  border-radius: 10px;
 }
 
 .mini-flap {
   display: grid;
   place-items: center;
-  width: clamp(28px, 6.2vw, 44px);
-  aspect-ratio: 0.72 / 1;
+  width: clamp(28px, 5.4vw, 48px);
+  aspect-ratio: 0.86 / 1;
   background: #0c0c0c;
   color: #f3ead6;
   font-family: 'Basement Grotesque', sans-serif;
   font-style: normal;
   font-weight: 800;
-  font-size: clamp(12px, 2.5vw, 18px);
-  letter-spacing: 0.05em;
+  font-size: clamp(12px, 2.4vw, 20px);
+  letter-spacing: 0;
   border-radius: 2px;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     inset 0 -3px 4px rgba(0, 0, 0, 0.65);
-}
-
-.tool-card strong {
-  font-family: 'Basement Grotesque', Fraunces, sans-serif;
-  font-weight: 800;
-  font-size: clamp(1.65rem, 3.8vw, 2.35rem);
-  letter-spacing: -0.045em;
-  line-height: 0.95;
-  color: var(--paper);
-}
-
-.tool-list strong {
-  letter-spacing: 0.04em;
-}
-
-.tool-deck {
-  color: var(--paper-dim);
-  font-size: 13px;
-  line-height: 1.45;
-  max-width: 18rem;
 }
 
 .grid {
@@ -919,10 +910,24 @@ button { cursor: pointer; }
 
 @media (max-width: 640px) {
   .page { width: min(100% - 24px, 720px); padding-top: 20px; }
-  .home-page { width: min(100% - 24px, 880px); }
-  .home-grid { grid-template-columns: 1fr; gap: 14px; }
-  .tool-object { aspect-ratio: 1.15 / 1; }
-  .home-grid { gap: 28px 0; }
+  .desk-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-content: center;
+    gap: 28px 18px;
+    padding: 28px 18px 36px;
+    min-height: calc(100vh - 48px);
+  }
+  .desk-item {
+    position: relative;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    width: 100%;
+  }
+  .desk-coin { width: 72%; justify-self: center; }
+  .desk-board { grid-column: 1 / -1; width: 90%; justify-self: center; }
   .grid { grid-template-columns: 1fr; }
   .primary, .ghost { width: auto; }
   .names-dock .primary,
