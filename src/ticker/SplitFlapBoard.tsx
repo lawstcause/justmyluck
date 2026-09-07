@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { playFlap } from '../sound';
+import { startFlap, stopFlap } from '../sound';
 import {
   TICKER_COLS,
   TICKER_GLYPHS,
@@ -34,6 +34,7 @@ export function SplitFlapBoard({ value, playId = 0, onSettled }: SplitFlapBoardP
 
   useEffect(() => {
     if (!value.trim() || preferReducedMotion()) {
+      stopFlap();
       setShown(target);
       setFlipping(new Array(CELL_COUNT).fill(false));
       shownRef.current = target;
@@ -44,8 +45,8 @@ export function SplitFlapBoard({ value, playId = 0, onSettled }: SplitFlapBoardP
     let current = shownRef.current === target ? ' '.repeat(CELL_COUNT) : shownRef.current;
     if (current.length !== CELL_COUNT) current = ' '.repeat(CELL_COUNT);
     let tickNo = 0;
-    let lastClick = 0;
     const flipFlags = () => new Array<boolean>(CELL_COUNT).fill(false);
+    startFlap();
 
     const id = window.setInterval(() => {
       tickNo += 1;
@@ -66,13 +67,9 @@ export function SplitFlapBoard({ value, playId = 0, onSettled }: SplitFlapBoardP
       shownRef.current = current;
       setShown(current);
       setFlipping(flip);
-      const now = Date.now();
-      if (busy && now - lastClick > 45) {
-        playFlap(Math.min(1, 0.2 + busy / 16));
-        lastClick = now;
-      }
       if (busy === 0) {
         window.clearInterval(id);
+        stopFlap();
         setFlipping(flipFlags());
         setShown(target);
         shownRef.current = target;
@@ -80,7 +77,10 @@ export function SplitFlapBoard({ value, playId = 0, onSettled }: SplitFlapBoardP
       }
     }, TICK_MS);
 
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearInterval(id);
+      stopFlap();
+    };
   }, [playId, target, value]);
 
   return (

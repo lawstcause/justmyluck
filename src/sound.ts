@@ -3,6 +3,14 @@ let scratchGain: GainNode | null = null;
 let scratchFilter: BiquadFilterNode | null = null;
 let scratchSrc: AudioBufferSourceNode | null = null;
 let noiseCache: AudioBuffer | null = null;
+const samples = new Map<string, AudioBuffer>();
+const loading = new Map<string, Promise<AudioBuffer | null>>();
+let flapVoice: { src: AudioBufferSourceNode; gain: GainNode } | null = null;
+let coinTossSrc: AudioBufferSourceNode | null = null;
+
+function sampleUrl(file: string) {
+  return `${import.meta.env.BASE_URL}sfx/${file}`;
+}
 
 function Ctor() {
   return window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
@@ -49,8 +57,49 @@ function burst(
   osc.stop(t + opts.decay + 0.02);
 }
 
+function loadSample(file: string): Promise<AudioBuffer | null> {
+  const c = ac();
+  if (!c) return Promise.resolve(null);
+  const hit = samples.get(file);
+  if (hit) return Promise.resolve(hit);
+  const pending = loading.get(file);
+  if (pending) return pending;
+  const job = fetch(sampleUrl(file))
+    .then((res) => {
+      if (!res.ok) throw new Error(file);
+      return res.arrayBuffer();
+    })
+    .then((raw) => c.decodeAudioData(raw.slice(0)))
+    .then((buf) => {
+      samples.set(file, buf);
+      loading.delete(file);
+      return buf;
+    })
+    .catch(() => {
+      loading.delete(file);
+      return null;
+    });
+  loading.set(file, job);
+  return job;
+}
+
+function playSample(buf: AudioBuffer, volume = 1) {
+  const c = ac();
+  if (!c) return null;
+  const src = c.createBufferSource();
+  src.buffer = buf;
+  const gain = c.createGain();
+  gain.gain.value = volume;
+  src.connect(gain);
+  gain.connect(c.destination);
+  src.start();
+  return { src, gain };
+}
+
 export function unlockSound() {
   ac();
+  void loadSample('coin-flip.mp3');
+  void loadSample('flap-board.mp3');
 }
 
 export function playTap() {
@@ -74,39 +123,31 @@ export function playTap() {
   src.stop(t + 0.09);
 }
 
-export function playCoinToss(strength: number, duration: number) {
-  const c = ac();
-  if (!c) return;
-  const t = c.currentTime;
-  const d = Math.max(0.45, duration);
-  const src = c.createBufferSource();
-  src.buffer = noise(c);
-  const lp = c.createBiquadFilter();
-  lp.type = 'lowpass';
-  lp.frequency.setValueAtTime(500 + strength * 900, t);
-  lp.frequency.exponentialRampToValueAtTime(160, t + d);
-  const g = c.createGain();
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(0.1 + strength * 0.07, t + 0.05);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + d);
-  src.connect(lp);
-  lp.connect(g);
-  g.connect(c.destination);
-  src.start(t);
-  src.stop(t + d);
-
-  const ring = c.createOscillator();
-  ring.type = 'triangle';
-  ring.frequency.setValueAtTime(1680 + strength * 400, t);
-  ring.frequency.exponentialRampToValueAtTime(380, t + d);
-  const rg = c.createGain();
-  rg.gain.setValueAtTime(0.0001, t);
-  rg.gain.exponentialRampToValueAtTime(0.045, t + 0.04);
-  rg.gain.exponentialRampToValueAtTime(0.0001, t + d);
-  ring.connect(rg);
-  rg.connect(c.destination);
-  ring.start(t);
-  ring.stop(t + d + 0.02);
+export function playCoinToss(_strength: number, _duration: number) {
+  const ready = samples.get('coin-flip.mp3');
+  if (ready) {
+    try {
+      coinTossSrc?.stop();
+    } catch {
+      /* already stopped */
+    }
+    const voice = playSample(ready, 1);
+    coinTossSrc = voice?.src ?? null;
+    if (coinTossSrc) coinTossSrc.onended = () => {
+      if (coinTossSrc === voice?.src) coinTossSrc = null;
+    };
+    return;
+  }
+  void loadSample('coin-flip.mp3').then((buf) => {
+    if (!buf) return;
+    try {
+      coinTossSrc?.stop();
+    } catch {
+      /* already stopped */
+    }
+    const voice = playSample(buf, 1);
+    coinTossSrc = voice?.src ?? null;
+  });
 }
 
 export function playCoinLand(strength: number) {
@@ -259,27 +300,54 @@ export function playPenCircle() {
   src.stop(t + 0.6);
 }
 
-export function playFlap(intensity: number) {
+export function startFlap() {
   const c = ac();
   if (!c) return;
-  const t = c.currentTime;
-  const src = c.createBufferSource();
-  src.buffer = noise(c);
-  const f = c.createBiquadFilter();
-  f.type = 'bandpass';
-  f.frequency.value = 1200 + Math.random() * 1100;
-  f.Q.value = 2.2;
-  const g = c.createGain();
-  const peak = 0.045 * Math.min(1.4, intensity);
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(peak, t + 0.003);
-  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.045);
-  src.connect(f);
-  f.connect(g);
-  g.connect(c.destination);
-  src.start(t);
-  src.stop(t + 0.05);
-  burst(c, t, { freq: 240 + Math.random() * 80, type: 'square', peak: peak * 0.35, decay: 0.03 });
+  if (flapVoice) return;
+
+  function run(buf: AudioBuffer) {
+    const current = ac();
+    if (!current || flapVoice) return;
+    const src = current.createBufferSource();
+    src.buffer = buf;
+    src.loop = true;
+    const gain = current.createGain();
+    gain.gain.value = 0.85;
+    src.connect(gain);
+    gain.connect(current.destination);
+    src.start();
+    flapVoice = { src, gain };
+  }
+
+  const ready = samples.get('flap-board.mp3');
+  if (ready) {
+    run(ready);
+    return;
+  }
+  void loadSample('flap-board.mp3').then((buf) => {
+    if (buf) run(buf);
+  });
+}
+
+export function stopFlap() {
+  const voice = flapVoice;
+  flapVoice = null;
+  if (!voice || !ctx) return;
+  const t = ctx.currentTime;
+  try {
+    voice.gain.gain.cancelScheduledValues(t);
+    voice.gain.gain.setValueAtTime(Math.max(0.0001, voice.gain.gain.value), t);
+    voice.gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+  } catch {
+    /* ignore */
+  }
+  window.setTimeout(() => {
+    try {
+      voice.src.stop();
+    } catch {
+      /* already stopped */
+    }
+  }, 140);
 }
 
 export function playPaper() {
