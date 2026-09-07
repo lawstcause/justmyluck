@@ -1,6 +1,5 @@
 import { CSSProperties, FormEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { pickOne } from '../rng';
-import { saveHistory } from '../storage';
 
 const LINE_Y = [
   16.761, 19.93, 23.099, 26.268, 29.507, 32.746, 35.915, 39.085, 42.254, 45.493, 48.662, 51.831, 55,
@@ -68,7 +67,6 @@ export function Names() {
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => {
       setCircled(true);
-      saveHistory({ at: Date.now(), tool: 'names', result: next });
       timer.current = window.setTimeout(() => {
         setPenAtName(false);
         setCircling(false);

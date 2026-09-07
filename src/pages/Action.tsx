@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import { HOUSE_DECK } from '../actions';
 import { parseList, pickOne } from '../rng';
-import { saveHistory } from '../storage';
 import { SplitFlapBoard } from '../ticker/SplitFlapBoard';
 
 export function Action() {
@@ -19,7 +18,6 @@ export function Action() {
     setSpinning(true);
     setPlayId((n) => n + 1);
     setWinner(next);
-    saveHistory({ at: Date.now(), tool: 'action', result: next, reroll });
   }
 
   return (

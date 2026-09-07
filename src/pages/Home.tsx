@@ -1,5 +1,3 @@
-import { loadHistory } from '../storage';
-
 const TOOLS = [
   { id: 'names', title: 'Names', deck: 'Write them on the paper. Luck circles one.' },
   { id: 'coin', title: 'Heads or Tails', deck: 'The quarter. One tap.' },
@@ -12,8 +10,6 @@ type HomeProps = {
 };
 
 export function Home({ onOpen }: HomeProps) {
-  const history = typeof window === 'undefined' ? [] : loadHistory().slice(0, 6);
-
   return (
     <div className="page">
       <header className="hero">
@@ -35,26 +31,6 @@ export function Home({ onOpen }: HomeProps) {
           </button>
         ))}
       </section>
-
-      {history.length > 0 ? (
-        <section className="recent">
-          <h2>On this phone</h2>
-          <ul>
-            {history.map((item) => (
-              <li key={item.at}>
-                <span>
-                  {item.result}
-                  <small>
-                    {' '}
-                    · {item.tool}
-                    {item.reroll ? ' · again' : ''}
-                  </small>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
     </div>
   );
 }

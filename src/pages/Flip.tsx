@@ -1,5 +1,4 @@
 import { lazy, Suspense, useState } from 'react';
-import { saveHistory } from '../storage';
 
 const CoinCanvas = lazy(() =>
   import('../coin/CoinCanvas').then((mod) => ({ default: mod.CoinCanvas })),
@@ -11,11 +10,10 @@ type FlipProps = {
   kicker: string;
   title: string;
   faces: [Face, Face];
-  tool: 'coin' | 'yesno';
   pack: 'quarter' | 'yesno';
 };
 
-export function Flip({ kicker, title, faces, tool, pack }: FlipProps) {
+export function Flip({ kicker, title, faces, pack }: FlipProps) {
   const [face, setFace] = useState<Face | null>(null);
   const [again, setAgain] = useState(false);
 
@@ -23,7 +21,6 @@ export function Flip({ kicker, title, faces, tool, pack }: FlipProps) {
     const next = side === 'heads' ? faces[0] : faces[1];
     setAgain(Boolean(face));
     setFace(next);
-    saveHistory({ at: Date.now(), tool, result: next.label, reroll: Boolean(face) });
   }
 
   return (

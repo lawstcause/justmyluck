@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { parseList, pickOne } from '../rng';
-import { saveHistory } from '../storage';
 
 type ListPickProps = {
   kicker: string;
@@ -36,7 +35,6 @@ export function ListPick({
       setWinner(next);
       setReroll(again);
       setSpinning(false);
-      saveHistory({ at: Date.now(), tool, result: next, reroll: again });
     }, 420);
   }
 

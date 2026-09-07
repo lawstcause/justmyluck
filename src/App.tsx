@@ -43,7 +43,6 @@ export default function App() {
           kicker="heads or tails"
           pack="quarter"
           title="Heads or tails."
-          tool="coin"
         />
       ) : null}
       {route === 'yesno' ? (
@@ -55,7 +54,6 @@ export default function App() {
           kicker="yes / no"
           pack="yesno"
           title="Yes or no."
-          tool="yesno"
         />
       ) : null}
       {route === 'names' ? <Names /> : null}
