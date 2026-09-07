@@ -107,6 +107,12 @@ button { cursor: pointer; }
   text-shadow: 0 2px 16px rgba(0, 0, 0, 0.6);
 }
 
+.home-hero h1 em {
+  display: block;
+  font-style: italic;
+  color: var(--amber);
+}
+
 .home-hero .lede {
   color: #e6d3b8;
   text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55);
