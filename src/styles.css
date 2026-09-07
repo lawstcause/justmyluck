@@ -218,12 +218,8 @@ button { cursor: pointer; }
   color: var(--paper);
 }
 
-.tool-names strong {
-  font-family: Yuyu, cursive;
-  font-weight: 400;
-  font-size: clamp(2rem, 5vw, 2.8rem);
-  letter-spacing: 0;
-  color: #f3ead8;
+.tool-list strong {
+  letter-spacing: 0.04em;
 }
 
 .tool-deck {

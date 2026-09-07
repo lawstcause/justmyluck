@@ -1,6 +1,6 @@
 # justmyluck.wtf
 
-Name picker, coin flip, scratch-off, random action.
+List, coin flip, scratch-off, random action.
 
 ```bash
 npm install

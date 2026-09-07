@@ -178,7 +178,7 @@ export function Names() {
               setPenAtName(false);
             }
           }}
-          placeholder={full ? 'Paper is full — refresh' : 'Type a name, press return'}
+          placeholder={full ? 'Paper is full — refresh' : 'Add to the list, press return'}
           value={draft}
         />
         <button className="ghost" disabled={full} type="submit">

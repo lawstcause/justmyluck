@@ -125,6 +125,11 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
     let restFace: 'heads' | 'tails' = 'heads';
     let pointer: { x: number; y: number; t: number } | null = null;
     let lastMove = { x: 0, y: 0, t: 0 };
+    let size = 1;
+
+    function restY() {
+      return REST_Y * size;
+    }
 
     function currentX() {
       return restFace === 'heads' ? HEADS : TAILS;
@@ -201,6 +206,9 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
       renderer.setSize(w, h, false);
       camera.aspect = w / Math.max(h, 1);
       camera.updateProjectionMatrix();
+      size = w < 640 ? 0.36 : w < 900 ? 0.72 : 1;
+      coin.scale.setScalar(size);
+      if (!toss && !pointer) coin.position.y = restY();
     }
     const ro = new ResizeObserver(resize);
     ro.observe(mount);
@@ -214,13 +222,13 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
         coin.rotation.x = toss.fromX + (toss.toX - toss.fromX) * ease;
         coin.rotation.z = 0;
         coin.rotation.y = 0;
-        coin.position.y = REST_Y + Math.sin(u * Math.PI) * toss.height;
-        coin.position.x = Math.sin(u * Math.PI) * 0.12 * toss.strength * (toss.toX < toss.fromX ? -1 : 1);
+        coin.position.y = restY() + Math.sin(u * Math.PI) * toss.height * size;
+        coin.position.x = Math.sin(u * Math.PI) * 0.12 * toss.strength * size * (toss.toX < toss.fromX ? -1 : 1);
         if (u >= 1) {
           restFace = toss.face;
           coin.rotation.x = restFace === 'heads' ? HEADS : TAILS;
           coin.rotation.z = 0;
-          coin.position.y = REST_Y;
+          coin.position.y = restY();
           playCoinLand(toss.strength);
           landRef.current(toss.face, toss.strength);
           toss = null;
@@ -229,14 +237,14 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
         const dx = lastMove.x - pointer.x;
         const dy = lastMove.y - pointer.y;
         coin.rotation.set(currentX(), 0, 0);
-        coin.position.x += (dx * 0.006 - coin.position.x) * 0.4;
-        coin.position.z += (dy * 0.006 - coin.position.z) * 0.4;
-        coin.position.y += (0.16 - coin.position.y) * 0.3;
+        coin.position.x += (dx * 0.006 * size - coin.position.x) * 0.4;
+        coin.position.z += (dy * 0.006 * size - coin.position.z) * 0.4;
+        coin.position.y += (0.16 * size - coin.position.y) * 0.3;
       } else {
         coin.rotation.set(currentX(), 0, 0);
         coin.position.x += (0 - coin.position.x) * 0.16;
         coin.position.z += (0 - coin.position.z) * 0.16;
-        coin.position.y = REST_Y;
+        coin.position.y = restY();
       }
       renderer.render(scene, camera);
       raf = window.requestAnimationFrame(tick);

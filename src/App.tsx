@@ -6,12 +6,13 @@ import { Names } from './pages/Names';
 import { Scratch } from './pages/Scratch';
 import { unlockSound } from './sound';
 
-type ToolId = 'home' | 'names' | 'coin' | 'scratch' | 'action';
+type ToolId = 'home' | 'list' | 'coin' | 'scratch' | 'action';
 
 function parseHash(): ToolId {
   const hash = window.location.hash.replace(/^#\/?/, '');
   if (hash === 'yesno' || hash === 'seer' || hash === 'scratch') return 'scratch';
-  if (hash === 'names' || hash === 'coin' || hash === 'action') return hash;
+  if (hash === 'names' || hash === 'list') return 'list';
+  if (hash === 'coin' || hash === 'action') return hash;
   return 'home';
 }
 
@@ -36,7 +37,7 @@ export default function App() {
     window.location.hash = id === 'home' ? '#/' : `#/${id}`;
   }
 
-  const desk = route === 'coin' || route === 'scratch' || route === 'names' || route === 'action';
+  const desk = route === 'coin' || route === 'scratch' || route === 'list' || route === 'action';
 
   return (
     <div className={`shell${desk ? ' shell-desk' : ''}`}>
@@ -54,7 +55,7 @@ export default function App() {
         />
       ) : null}
       {route === 'scratch' ? <Scratch /> : null}
-      {route === 'names' ? <Names /> : null}
+      {route === 'list' ? <Names /> : null}
       {route === 'action' ? <Action /> : null}
     </div>
   );

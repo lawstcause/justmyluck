@@ -4,9 +4,9 @@ import { playTap } from '../sound';
 
 const TOOLS = [
   {
-    id: 'names',
-    title: 'Names',
-    deck: 'Write them. Luck circles one and will not say why.',
+    id: 'list',
+    title: 'LIST',
+    deck: 'From a list. Choose one.',
   },
   {
     id: 'coin',
@@ -61,11 +61,11 @@ function bump(event: MouseEvent<HTMLButtonElement>) {
 }
 
 function ObjectStage({ id }: { id: (typeof TOOLS)[number]['id'] }) {
-  if (id === 'names') {
+  if (id === 'list') {
     return (
       <span className="tool-object tool-object-names">
         <img alt="" src={`${import.meta.env.BASE_URL}paper/sheet.png`} />
-        <em>luck circles one</em>
+        <em>choose one</em>
       </span>
     );
   }
