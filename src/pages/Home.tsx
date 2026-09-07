@@ -46,7 +46,17 @@ export function Home({ onOpen }: HomeProps) {
   return (
     <div className="home-desk-page">
       <div className="home-desk" aria-hidden="true" />
-      <p className="home-stamp">justmyluck.wtf</p>
+      <header className="home-hero">
+        <p className="kicker">justmyluck.wtf</p>
+        <h1>
+          Luck picks.
+          <em> You live with it.</em>
+        </h1>
+        <p className="lede">
+          Four objects on a desk that have never met you. They will pick anyway. You will live with
+          it, which was the whole idea.
+        </p>
+      </header>
 
       <div className="desk-top" aria-label="Tools on the desk">
         <button

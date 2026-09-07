@@ -23,19 +23,24 @@ export function Action() {
     <div className="action-page">
       <div className="action-desk" aria-hidden="true" />
 
-      <div className="action-hud">
-        <button
-          className="back"
-          type="button"
-          onClick={() => {
-            window.location.hash = '#/';
-          }}
-        >
-          ← justmyluck.wtf
-        </button>
-        <p className="ticker-status">
-          {spinning ? 'flipping' : winner ? (again ? 'again' : 'luck picked') : 'waiting'}
-        </p>
+      <div className="action-hud tool-hud">
+        <div className="tool-hud-bar">
+          <button
+            className="back"
+            type="button"
+            onClick={() => {
+              window.location.hash = '#/';
+            }}
+          >
+            ← justmyluck.wtf
+          </button>
+          <p className="ticker-status">
+            {spinning ? 'flipping' : winner ? (again ? 'again' : 'luck picked') : 'waiting'}
+          </p>
+        </div>
+        <p className="kicker">action</p>
+        <h1>Action.</h1>
+        <p className="lede">Luck picks one thing from a thousand. The board tells you. You do it.</p>
       </div>
 
       <div className="ticker-stage">

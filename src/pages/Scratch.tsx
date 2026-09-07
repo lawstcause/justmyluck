@@ -243,22 +243,27 @@ export function Scratch() {
     <div className="scratch-page" ref={stageRef}>
       <div className="scratch-desk" aria-hidden="true" />
 
-      <div className="scratch-hud">
-        <button
-          className="back"
-          type="button"
-          onClick={() => {
-            window.location.hash = '#/';
-          }}
-        >
-          ← justmyluck.wtf
-        </button>
-        <p className="ticker-status">
-          {status === 'scratching' ? 'scratching' : 'use the quarter'}
-        </p>
-        <button className="ghost names-refresh" onClick={newTicket} type="button">
-          New ticket
-        </button>
+      <div className="scratch-hud tool-hud">
+        <div className="tool-hud-bar">
+          <button
+            className="back"
+            type="button"
+            onClick={() => {
+              window.location.hash = '#/';
+            }}
+          >
+            ← justmyluck.wtf
+          </button>
+          <p className="ticker-status">
+            {status === 'scratching' ? 'scratching' : 'use the quarter'}
+          </p>
+          <button className="ghost names-refresh" onClick={newTicket} type="button">
+            New ticket
+          </button>
+        </div>
+        <p className="kicker">scratch</p>
+        <h1>Scratch.</h1>
+        <p className="lede">Drag the quarter across the gold. Luck wrote the line. You do the work.</p>
       </div>
 
       <div className="scratch-stage">

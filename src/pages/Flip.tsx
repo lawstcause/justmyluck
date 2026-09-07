@@ -29,13 +29,15 @@ export function Flip({ kicker, title, faces, pack }: FlipProps) {
         <CoinCanvas key={pack} onLand={onLand} pack={pack} />
       </Suspense>
 
-      <div className="flip-hud">
-        <button className="back" type="button" onClick={() => { window.location.hash = '#/'; }}>
-          ← justmyluck.wtf
-        </button>
+      <div className="flip-hud tool-hud">
+        <div className="tool-hud-bar">
+          <button className="back" type="button" onClick={() => { window.location.hash = '#/'; }}>
+            ← justmyluck.wtf
+          </button>
+        </div>
         <p className="kicker">{kicker}</p>
         <h1>{title}</h1>
-        <p className="lede">Flick it. Click it. Swipe anywhere on the desk.</p>
+        <p className="lede">Flick it. Click it. Swipe anywhere on the desk. Two faces. Luck picks one.</p>
       </div>
 
       {face ? (

@@ -96,19 +96,24 @@ export function Names() {
     <div className="names-page">
       <div className="names-desk" aria-hidden="true" />
 
-      <div className="names-hud">
-        <button
-          className="back"
-          type="button"
-          onClick={() => {
-            window.location.hash = '#/';
-          }}
-        >
-          ← justmyluck.wtf
-        </button>
-        <button className="ghost names-refresh" onClick={refresh} type="button">
-          Refresh
-        </button>
+      <div className="names-hud tool-hud">
+        <div className="tool-hud-bar">
+          <button
+            className="back"
+            type="button"
+            onClick={() => {
+              window.location.hash = '#/';
+            }}
+          >
+            ← justmyluck.wtf
+          </button>
+          <button className="ghost names-refresh" onClick={refresh} type="button">
+            Refresh
+          </button>
+        </div>
+        <p className="kicker">list</p>
+        <h1>List.</h1>
+        <p className="lede">Write the names. Luck circles one. That is the one.</p>
       </div>
 
       <div className="sheet-stage">
