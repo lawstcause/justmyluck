@@ -446,7 +446,7 @@ button { cursor: pointer; }
 .action-desk {
   position: fixed;
   inset: 0;
-  background: #3a2416 url('/desk/ticker.jpg') center / cover no-repeat;
+  background: #3a2416 url('/desk/wood.jpg') center / cover no-repeat;
   z-index: 0;
 }
 
