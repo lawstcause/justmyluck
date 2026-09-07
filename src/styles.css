@@ -635,7 +635,7 @@ button { cursor: pointer; }
 }
 
 .ticker {
-  width: min(600px, 92vw);
+  width: min(720px, 94vw);
   filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.5));
 }
 
@@ -664,8 +664,9 @@ button { cursor: pointer; }
 
 .sf-slot {
   position: relative;
-  aspect-ratio: 0.72 / 1;
+  aspect-ratio: 0.86 / 1;
   overflow: hidden;
+  container-type: inline-size;
   background: #0c0c0c;
   border-radius: 2px;
   box-shadow:
@@ -694,8 +695,8 @@ button { cursor: pointer; }
   height: 200%;
   font-family: 'Basement Grotesque', 'IBM Plex Mono', sans-serif;
   font-weight: 800;
-  font-size: clamp(18px, 5.2vw, 44px);
-  letter-spacing: 0.04em;
+  font-size: 68cqw;
+  letter-spacing: 0;
   color: #f3ead6;
   line-height: 1;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.85);
@@ -929,8 +930,7 @@ button { cursor: pointer; }
   .sheet-wrap { width: min(520px, 88vw); }
   .pen-prop { width: min(160px, 40vw); }
   .pencil-prop { width: min(150px, 38vw); right: 0; }
-  .sf-letter { font-size: clamp(16px, 6.4vw, 28px); }
-  .ticker { width: min(420px, 94vw); }
+  .ticker { width: min(100% - 16px, 94vw); }
   .ticker-stage { padding: 8px 12px 96px; min-height: calc(100vh - 128px); }
   .scratch-wrap { width: min(540px, 96vw); }
   .scratch-coin { width: min(96px, 28vw); height: min(96px, 28vw); }
