@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { playFlap } from '../sound';
 import {
   TICKER_COLS,
   TICKER_GLYPHS,
@@ -17,38 +18,6 @@ type SplitFlapBoardProps = {
 
 function preferReducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
-let audioCtx: AudioContext | null = null;
-
-function flapClick(intensity: number) {
-  try {
-    const Audio = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    if (!Audio) return;
-    if (!audioCtx) audioCtx = new Audio();
-    if (audioCtx.state === 'suspended') void audioCtx.resume();
-    const t = audioCtx.currentTime;
-    const noise = audioCtx.createBuffer(1, 220, audioCtx.sampleRate);
-    const data = noise.getChannelData(0);
-    for (let i = 0; i < data.length; i += 1) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / 40);
-    const src = audioCtx.createBufferSource();
-    src.buffer = noise;
-    const filter = audioCtx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = 1400 + Math.random() * 900;
-    filter.Q.value = 1.8;
-    const gain = audioCtx.createGain();
-    gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(0.035 * intensity, t + 0.004);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
-    src.connect(filter);
-    filter.connect(gain);
-    gain.connect(audioCtx.destination);
-    src.start(t);
-    src.stop(t + 0.06);
-  } catch {
-    /* ignore autoplay limits */
-  }
 }
 
 export function SplitFlapBoard({ value, playId = 0, onSettled }: SplitFlapBoardProps) {
@@ -99,7 +68,7 @@ export function SplitFlapBoard({ value, playId = 0, onSettled }: SplitFlapBoardP
       setFlipping(flip);
       const now = Date.now();
       if (busy && now - lastClick > 45) {
-        flapClick(Math.min(1, 0.2 + busy / 16));
+        playFlap(Math.min(1, 0.2 + busy / 16));
         lastClick = now;
       }
       if (busy === 0) {

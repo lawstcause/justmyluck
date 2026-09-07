@@ -4,6 +4,7 @@ import { Flip } from './pages/Flip';
 import { Home } from './pages/Home';
 import { Names } from './pages/Names';
 import { Scratch } from './pages/Scratch';
+import { unlockSound } from './sound';
 
 type ToolId = 'home' | 'names' | 'coin' | 'scratch' | 'action';
 
@@ -21,9 +22,14 @@ export default function App() {
 
   useEffect(() => {
     const onHash = () => setRoute(parseHash());
+    const unlock = () => unlockSound();
     window.addEventListener('hashchange', onHash);
+    window.addEventListener('pointerdown', unlock);
     if (!window.location.hash) window.location.replace('#/');
-    return () => window.removeEventListener('hashchange', onHash);
+    return () => {
+      window.removeEventListener('hashchange', onHash);
+      window.removeEventListener('pointerdown', unlock);
+    };
   }, []);
 
   function go(id: ToolId) {

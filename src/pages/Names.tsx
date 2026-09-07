@@ -1,5 +1,6 @@
 import { CSSProperties, FormEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { pickOne } from '../rng';
+import { playPenCircle, playPenTravel, playPenWrite } from '../sound';
 
 const LINE_Y = [
   16.761, 19.93, 23.099, 26.268, 29.507, 32.746, 35.915, 39.085, 42.254, 45.493, 48.662, 51.831, 55,
@@ -50,6 +51,7 @@ export function Names() {
     const exists = names.some((name) => name.toLowerCase() === next.toLowerCase());
     setDraft('');
     if (exists) return;
+    playPenWrite();
     setNames((current) => [...current, next]);
     setWinner(null);
     setCircled(false);
@@ -64,8 +66,10 @@ export function Names() {
     setCircled(false);
     setCircling(true);
     setPenAtName(true);
+    playPenTravel();
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => {
+      playPenCircle();
       setCircled(true);
       timer.current = window.setTimeout(() => {
         setPenAtName(false);

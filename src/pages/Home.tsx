@@ -1,11 +1,28 @@
 import { MouseEvent } from 'react';
 import { gsap } from 'gsap';
+import { playTap } from '../sound';
 
 const TOOLS = [
-  { id: 'names', title: 'Names', deck: 'Write them on the paper. Luck circles one.', idx: '01' },
-  { id: 'coin', title: 'Heads or Tails', deck: 'The quarter. One tap.', idx: '02' },
-  { id: 'scratch', title: 'Scratch', deck: 'The quarter. Scratch the gold.', idx: '03' },
-  { id: 'action', title: 'Action', deck: 'A thousand small good things. Luck picks one.', idx: '04' },
+  {
+    id: 'names',
+    title: 'Names',
+    deck: 'Write them. Luck circles one and will not say why.',
+  },
+  {
+    id: 'coin',
+    title: 'Heads or Tails',
+    deck: 'The quarter already knows. You are late.',
+  },
+  {
+    id: 'scratch',
+    title: 'Scratch',
+    deck: 'Gold first. The sentence after. You do the work.',
+  },
+  {
+    id: 'action',
+    title: 'Action',
+    deck: 'A board of flaps will tell you what to do.',
+  },
 ] as const;
 
 type HomeProps = {
@@ -22,7 +39,7 @@ function bump(event: MouseEvent<HTMLButtonElement>) {
     x: (event.clientX - (box.left + box.width / 2)) / box.width,
     y: (event.clientY - (box.top + box.height / 2)) / box.height,
   };
-  const bumpFactor = 28;
+  const bumpFactor = 22;
   const durationFactor = 1.75;
 
   gsap
@@ -43,6 +60,40 @@ function bump(event: MouseEvent<HTMLButtonElement>) {
     });
 }
 
+function ObjectStage({ id }: { id: (typeof TOOLS)[number]['id'] }) {
+  if (id === 'names') {
+    return (
+      <span className="tool-object tool-object-names">
+        <img alt="" src={`${import.meta.env.BASE_URL}paper/sheet.png`} />
+        <em>luck circles one</em>
+      </span>
+    );
+  }
+  if (id === 'coin') {
+    return (
+      <span className="tool-object tool-object-coin">
+        <img alt="" src={`${import.meta.env.BASE_URL}scratch/quarter.png`} />
+      </span>
+    );
+  }
+  if (id === 'scratch') {
+    return (
+      <span className="tool-object tool-object-scratch">
+        <img alt="" src={`${import.meta.env.BASE_URL}scratch/ticket.png`} />
+      </span>
+    );
+  }
+  return (
+    <span className="tool-object tool-object-action">
+      {'ACTION'.split('').map((ch) => (
+        <i className="mini-flap" key={ch}>
+          {ch}
+        </i>
+      ))}
+    </span>
+  );
+}
+
 export function Home({ onOpen }: HomeProps) {
   return (
     <div className="page home-page">
@@ -53,22 +104,26 @@ export function Home({ onOpen }: HomeProps) {
           <em> You live with it.</em>
         </h1>
         <p className="lede">
-          Name picker, heads or tails, scratch-off, random action. No account. No essay. Tap and go.
+          Four objects on a desk that have never met you. They will pick anyway. You will live with
+          it, which was the whole idea.
         </p>
       </header>
 
       <section className="home-grid" aria-label="Tools">
         {TOOLS.map((tool) => (
           <button
-            className="bump-card"
+            className={`tool-card tool-${tool.id}`}
             key={tool.id}
-            onClick={() => onOpen(tool.id)}
+            onClick={() => {
+              playTap();
+              onOpen(tool.id);
+            }}
             onMouseEnter={bump}
             type="button"
           >
-            <span className="bump-idx">{tool.idx}</span>
+            <ObjectStage id={tool.id} />
             <strong>{tool.title}</strong>
-            <span className="bump-deck">{tool.deck}</span>
+            <span className="tool-deck">{tool.deck}</span>
           </button>
         ))}
       </section>

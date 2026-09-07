@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { pickOne } from '../rng';
 import { SEER_LINES } from '../seer';
+import { moveScratch, playPaper, startScratch, stopScratch } from '../sound';
 
 const PANEL = {
   left: 23.415,
@@ -9,16 +10,14 @@ const PANEL = {
   height: 34.898,
 };
 
-const REVEAL_AT = 0.48;
 const TICKET_SRC = `${import.meta.env.BASE_URL}scratch/ticket.png`;
-const QUARTER_SRC = `${import.meta.env.BASE_URL}scratch/quarter.png`;
 
 type CoinPose = { x: number; y: number; rot: number; down: boolean; on: boolean };
 
 export function Scratch() {
   const [line, setLine] = useState(() => pickOne(SEER_LINES));
   const [ticketId, setTicketId] = useState(0);
-  const [status, setStatus] = useState<'idle' | 'scratching' | 'picked'>('idle');
+  const [status, setStatus] = useState<'idle' | 'scratching'>('idle');
 
   const stageRef = useRef<HTMLDivElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -30,9 +29,7 @@ export function Scratch() {
   const drawing = useRef(false);
   const last = useRef<{ x: number; y: number } | null>(null);
   const pose = useRef<CoinPose>({ x: 0, y: 0, rot: -12, down: false, on: false });
-  const revealed = useRef(false);
   const started = useRef(false);
-  const checkTick = useRef(0);
 
   const paintCoin = useCallback(() => {
     const el = coinRef.current;
@@ -70,43 +67,14 @@ export function Scratch() {
     const sw = (PANEL.width / 100) * img.naturalWidth;
     const sh = (PANEL.height / 100) * img.naturalHeight;
     ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-    revealed.current = false;
   }, []);
-
-  const finishReveal = useCallback(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
-    if (!canvas || !ctx || revealed.current) return;
-    revealed.current = true;
-    ctx.save();
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.restore();
-    setStatus('picked');
-  }, []);
-
-  const measureCleared = useCallback(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
-    if (!canvas || !ctx || revealed.current) return;
-    const { width, height } = canvas;
-    const data = ctx.getImageData(0, 0, width, height).data;
-    const step = 16;
-    let gone = 0;
-    let total = 0;
-    for (let i = 3; i < data.length; i += 4 * step) {
-      total += 1;
-      if (data[i] < 40) gone += 1;
-    }
-    if (total > 0 && gone / total >= REVEAL_AT) finishReveal();
-  }, [finishReveal]);
 
   const scratchAt = useCallback(
     (clientX: number, clientY: number) => {
       const canvas = canvasRef.current;
       const panel = panelRef.current;
       const ctx = canvas?.getContext('2d');
-      if (!canvas || !panel || !ctx || revealed.current) return;
+      if (!canvas || !panel || !ctx) return;
 
       const box = panel.getBoundingClientRect();
       if (box.width < 8) return;
@@ -132,11 +100,8 @@ export function Scratch() {
       ctx.restore();
       last.current = { x, y };
       started.current = true;
-
-      checkTick.current += 1;
-      if (checkTick.current % 8 === 0) measureCleared();
     },
-    [measureCleared],
+    [],
   );
 
   useEffect(() => {
@@ -156,7 +121,7 @@ export function Scratch() {
     const panel = panelRef.current;
     if (!panel || typeof ResizeObserver === 'undefined') return;
     const ro = new ResizeObserver(() => {
-      if (!started.current && !revealed.current) fillCoating();
+      if (!started.current) fillCoating();
     });
     ro.observe(panel);
     return () => ro.disconnect();
@@ -183,7 +148,13 @@ export function Scratch() {
         pose.current.rot += dx * 0.35 + dy * 0.08;
       }
       paintCoin();
-      if (drawing.current) scratchAt(event.clientX, event.clientY);
+      if (drawing.current) {
+        scratchAt(event.clientX, event.clientY);
+        if (overPanel(event.clientX, event.clientY)) {
+          startScratch();
+          moveScratch(Math.hypot(dx, dy));
+        }
+      }
     }
 
     function onDown(event: PointerEvent) {
@@ -197,8 +168,9 @@ export function Scratch() {
       last.current = null;
       drawing.current = true;
       paintCoin();
-      if (overPanel(event.clientX, event.clientY) && !revealed.current) {
-        setStatus((s) => (s === 'picked' ? s : 'scratching'));
+      if (overPanel(event.clientX, event.clientY)) {
+        setStatus('scratching');
+        startScratch();
         scratchAt(event.clientX, event.clientY);
       }
       try {
@@ -213,11 +185,11 @@ export function Scratch() {
       last.current = null;
       pose.current.down = false;
       paintCoin();
+      stopScratch();
       if (event.pointerType === 'touch' || event.pointerType === 'pen') {
         pose.current.on = false;
         paintCoin();
       }
-      measureCleared();
     }
 
     function onLeave() {
@@ -238,7 +210,7 @@ export function Scratch() {
       stage.removeEventListener('pointercancel', onUp);
       stage.removeEventListener('pointerleave', onLeave);
     };
-  }, [measureCleared, paintCoin, scratchAt]);
+  }, [paintCoin, scratchAt]);
 
   useEffect(() => {
     const wrap = wrapRef.current;
@@ -257,9 +229,9 @@ export function Scratch() {
   function newTicket() {
     drawing.current = false;
     last.current = null;
-    revealed.current = false;
     started.current = false;
-    checkTick.current = 0;
+    stopScratch();
+    playPaper();
     setLine(pickOne(SEER_LINES));
     setStatus('idle');
     setTicketId((n) => n + 1);
@@ -282,7 +254,7 @@ export function Scratch() {
           ← justmyluck.wtf
         </button>
         <p className="ticker-status">
-          {status === 'scratching' ? 'scratching' : status === 'picked' ? 'luck picked' : 'use the quarter'}
+          {status === 'scratching' ? 'scratching' : 'use the quarter'}
         </p>
         <button className="ghost names-refresh" onClick={newTicket} type="button">
           New ticket

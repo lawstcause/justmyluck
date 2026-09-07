@@ -16,6 +16,7 @@ import {
   WebGLRenderer,
 } from 'three';
 import { pickOne } from '../rng';
+import { playCoinLand, playCoinToss } from '../sound';
 
 type CoinCanvasProps = {
   pack: 'quarter' | 'yesno';
@@ -148,6 +149,7 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
         face,
         strength: power,
       };
+      playCoinToss(power, toss.duration);
     }
 
     function isUi(target: EventTarget | null) {
@@ -219,6 +221,7 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
           coin.rotation.x = restFace === 'heads' ? HEADS : TAILS;
           coin.rotation.z = 0;
           coin.position.y = REST_Y;
+          playCoinLand(toss.strength);
           landRef.current(toss.face, toss.strength);
           toss = null;
         }
