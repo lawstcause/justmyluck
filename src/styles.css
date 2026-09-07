@@ -630,12 +630,12 @@ button { cursor: pointer; }
   z-index: 1;
   display: grid;
   place-items: center;
-  min-height: calc(100vh - 160px);
-  padding: 24px 16px 120px;
+  min-height: calc(100vh - 148px);
+  padding: 12px 16px 108px;
 }
 
 .ticker {
-  width: min(920px, 100%);
+  width: min(600px, 92vw);
   filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.5));
 }
 
@@ -656,9 +656,9 @@ button { cursor: pointer; }
 
 .ticker-grid {
   display: grid;
-  grid-template-columns: repeat(24, minmax(0, 1fr));
-  grid-template-rows: repeat(3, auto);
-  gap: 6px 4px;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: repeat(6, auto);
+  gap: 7px 6px;
   perspective: 800px;
 }
 
@@ -694,7 +694,7 @@ button { cursor: pointer; }
   height: 200%;
   font-family: 'Basement Grotesque', 'IBM Plex Mono', sans-serif;
   font-weight: 800;
-  font-size: clamp(11px, 1.85vw, 22px);
+  font-size: clamp(18px, 5.2vw, 44px);
   letter-spacing: 0.04em;
   color: #f3ead6;
   line-height: 1;
@@ -929,7 +929,9 @@ button { cursor: pointer; }
   .sheet-wrap { width: min(520px, 88vw); }
   .pen-prop { width: min(160px, 40vw); }
   .pencil-prop { width: min(150px, 38vw); right: 0; }
-  .sf-letter { font-size: clamp(9px, 2.6vw, 14px); }
+  .sf-letter { font-size: clamp(16px, 6.4vw, 28px); }
+  .ticker { width: min(420px, 94vw); }
+  .ticker-stage { padding: 8px 12px 96px; min-height: calc(100vh - 128px); }
   .scratch-wrap { width: min(540px, 96vw); }
   .scratch-coin { width: min(96px, 28vw); height: min(96px, 28vw); }
   .scratch-hud { width: min(100% - 16px, 920px); }

@@ -1,5 +1,5 @@
-export const TICKER_COLS = 24;
-export const TICKER_ROWS = 3;
+export const TICKER_COLS = 12;
+export const TICKER_ROWS = 6;
 export const TICKER_GLYPHS = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?'-";
 
 export function sanitizeTicker(text: string): string {
@@ -63,13 +63,11 @@ export function layoutTicker(text: string, cols = TICKER_COLS, rows = TICKER_ROW
   if (!clean) return ' '.repeat(cols * rows);
 
   const wrapped = wrapWords(clean, cols, rows);
+  const top = Math.max(0, Math.floor((rows - wrapped.length) / 2));
   const padded: string[] = [];
-  if (wrapped.length === 1) {
-    padded.push(' '.repeat(cols), centerLine(wrapped[0], cols), ' '.repeat(cols));
-  } else {
-    for (let i = 0; i < rows; i += 1) {
-      padded.push(wrapped[i] ? centerLine(wrapped[i], cols) : ' '.repeat(cols));
-    }
+  for (let i = 0; i < rows; i += 1) {
+    const line = wrapped[i - top];
+    padded.push(line ? centerLine(line, cols) : ' '.repeat(cols));
   }
   return padded.join('');
 }
