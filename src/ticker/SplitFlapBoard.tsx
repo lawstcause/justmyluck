@@ -7,7 +7,6 @@ import {
 } from './layout';
 
 const TICK_MS = 48;
-const STAGGER_MS = 28;
 const CELL_COUNT = TICKER_COLS * TICKER_ROWS;
 
 type SplitFlapBoardProps = {
@@ -117,17 +116,23 @@ export function SplitFlapBoard({ value, playId = 0, onSettled }: SplitFlapBoardP
 
   return (
     <div className="ticker" role="img" aria-label={value.trim() ? value : 'Luck has not picked yet'}>
-      <img alt="" className="ticker-frame" src={`${import.meta.env.BASE_URL}ticker/board.webp`} />
-      <div className="ticker-grid">
-        {Array.from({ length: CELL_COUNT }, (_, i) => {
-          const ch = shown[i] === ' ' ? '' : shown[i];
-          return (
-            <div className={`sf-slot${flipping[i] ? ' is-flipping' : ''}`} key={i}>
-              <span className="sf-letter">{ch}</span>
-              <i className="sf-seam" />
-            </div>
-          );
-        })}
+      <div className="ticker-bezel">
+        <div className="ticker-grid">
+          {Array.from({ length: CELL_COUNT }, (_, i) => {
+            const ch = shown[i] === ' ' ? '' : shown[i];
+            return (
+              <div className={`sf-slot${flipping[i] ? ' is-flipping' : ''}`} key={i}>
+                <span className="sf-half sf-top">
+                  <span className="sf-letter">{ch}</span>
+                </span>
+                <span className="sf-half sf-bot">
+                  <span className="sf-letter">{ch}</span>
+                </span>
+                <i className="sf-seam" />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

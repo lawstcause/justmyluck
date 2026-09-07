@@ -28,7 +28,7 @@ export default function App() {
     window.location.hash = id === 'home' ? '#/' : `#/${id}`;
   }
 
-  const desk = route === 'coin' || route === 'yesno' || route === 'names';
+  const desk = route === 'coin' || route === 'yesno' || route === 'names' || route === 'action';
 
   return (
     <div className={`shell${desk ? ' shell-desk' : ''}`}>
@@ -59,11 +59,7 @@ export default function App() {
         />
       ) : null}
       {route === 'names' ? <Names /> : null}
-      {route === 'action' ? (
-        <div className="page action-shell">
-          <Action />
-        </div>
-      ) : null}
+      {route === 'action' ? <Action /> : null}
     </div>
   );
 }

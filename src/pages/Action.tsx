@@ -24,69 +24,67 @@ export function Action() {
 
   return (
     <div className="action-page">
-      <button
-        className="back"
-        type="button"
-        onClick={() => {
-          window.location.hash = '#/';
+      <div className="action-desk" aria-hidden="true" />
+
+      <div className="action-hud">
+        <button
+          className="back"
+          type="button"
+          onClick={() => {
+            window.location.hash = '#/';
+          }}
+        >
+          ← justmyluck.wtf
+        </button>
+        <p className="ticker-status">
+          {spinning ? 'flipping' : winner ? (again ? 'again' : 'luck picked') : 'waiting'}
+        </p>
+      </div>
+
+      <div className="ticker-stage">
+        <SplitFlapBoard
+          onSettled={() => setSpinning(false)}
+          playId={playId}
+          value={winner}
+        />
+      </div>
+
+      <form
+        className="action-dock"
+        onSubmit={(event) => {
+          event.preventDefault();
+          roll(Boolean(winner));
         }}
       >
-        ← justmyluck.wtf
-      </button>
-
-      <p className="kicker">action</p>
-      <h1>Do this.</h1>
-      <p className="lede">Luck flips the board. You live with whatever it says.</p>
-
-      <SplitFlapBoard
-        onSettled={() => setSpinning(false)}
-        playId={playId}
-        value={winner}
-      />
-
-      <p className="ticker-status">
-        {spinning ? 'flipping' : winner ? (again ? 'again' : 'luck picked') : 'waiting'}
-      </p>
-
-      <div className="row">
-        <button className="primary" disabled={items.length < 2 || spinning} onClick={() => roll(false)} type="button">
-          {spinning ? 'Flipping…' : 'Pick one'}
+        <span className="tool-meta">{items.length} in the hat</span>
+        <button className="primary" disabled={items.length < 2 || spinning} type="submit">
+          {spinning ? 'Flipping…' : winner ? 'Pick again' : 'Pick one'}
         </button>
-        {winner ? (
-          <button className="ghost" disabled={spinning} onClick={() => roll(true)} type="button">
-            Pick again
+        <details className="action-list">
+          <summary>List</summary>
+          <textarea
+            onChange={(event) => {
+              setRaw(event.target.value);
+              setWinner('');
+              setAgain(false);
+            }}
+            placeholder={'Walk\nCook\nSend the email\nGo to bed'}
+            rows={8}
+            value={raw}
+          />
+          <button
+            className="text-btn"
+            onClick={() => {
+              setRaw(HOUSE_DECK.join('\n'));
+              setWinner('');
+              setAgain(false);
+            }}
+            type="button"
+          >
+            Load the 1000
           </button>
-        ) : null}
-      </div>
-
-      <div className="tool-meta">
-        <span>{items.length} in the hat</span>
-      </div>
-
-      <details className="action-list">
-        <summary>Write your own list</summary>
-        <textarea
-          onChange={(event) => {
-            setRaw(event.target.value);
-            setWinner('');
-            setAgain(false);
-          }}
-          placeholder={'Walk\nCook\nSend the email\nGo to bed'}
-          rows={8}
-          value={raw}
-        />
-        <button
-          className="text-btn"
-          onClick={() => {
-            setRaw(HOUSE_DECK.join('\n'));
-            setWinner('');
-            setAgain(false);
-          }}
-          type="button"
-        >
-          Load the 1000
-        </button>
-      </details>
+        </details>
+      </form>
     </div>
   );
 }
