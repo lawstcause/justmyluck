@@ -657,7 +657,7 @@ button { cursor: pointer; }
 .ticker-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  grid-template-rows: repeat(6, auto);
+  grid-template-rows: repeat(8, auto);
   gap: 7px 6px;
   perspective: 800px;
 }

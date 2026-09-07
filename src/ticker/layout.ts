@@ -1,5 +1,5 @@
 export const TICKER_COLS = 12;
-export const TICKER_ROWS = 6;
+export const TICKER_ROWS = 8;
 export const TICKER_GLYPHS = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,!?'-";
 
 export function sanitizeTicker(text: string): string {
