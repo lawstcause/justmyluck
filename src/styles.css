@@ -712,6 +712,129 @@ button { cursor: pointer; }
   margin-top: 12px;
 }
 
+.scratch-page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  cursor: none;
+  touch-action: none;
+  user-select: none;
+}
+
+.scratch-desk {
+  position: fixed;
+  inset: 0;
+  background: #3a2416 url('/desk/wood.jpg') center / cover no-repeat;
+  z-index: 0;
+}
+
+.scratch-hud {
+  position: relative;
+  z-index: 8;
+  width: min(920px, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 18px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: auto;
+}
+
+.scratch-hud .back,
+.scratch-hud .names-refresh {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.scratch-hud .back {
+  margin-bottom: 0;
+  color: #f3ead8;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.65);
+}
+
+.scratch-stage {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 88px);
+  padding: 8px 16px 36px;
+}
+
+.scratch-wrap {
+  position: relative;
+  width: min(540px, 92vw);
+  filter: drop-shadow(0 22px 34px rgba(0, 0, 0, 0.55));
+}
+
+.scratch-ticket {
+  width: 100%;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+}
+
+.scratch-panel {
+  position: absolute;
+  overflow: hidden;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  padding: 7% 8%;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 240, 0.28), transparent 42%),
+    radial-gradient(120% 90% at 50% 38%, #efe1bd, #d6be8e 70%, #c4aa76);
+  box-shadow: inset 0 0 0 1px rgba(80, 52, 18, 0.14);
+}
+
+.scratch-line {
+  margin: 0;
+  text-align: center;
+  font-family: Fraunces, ui-serif, Georgia, serif;
+  font-weight: 500;
+  font-style: italic;
+  font-size: clamp(1.05rem, 3.4vw, 1.55rem);
+  line-height: 1.28;
+  color: #2c2216;
+  text-wrap: balance;
+  text-shadow: 0 1px 0 rgba(255, 244, 220, 0.35);
+}
+
+.scratch-line.long {
+  font-size: clamp(0.92rem, 2.8vw, 1.28rem);
+}
+
+.scratch-latex {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  touch-action: none;
+}
+
+.scratch-coin {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 20;
+  width: min(112px, 24vw);
+  height: min(112px, 24vw);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  background: url('/scratch/quarter.png') center / 104% 104% no-repeat;
+  filter: drop-shadow(0 14px 16px rgba(0, 0, 0, 0.58));
+  will-change: transform;
+}
+
+.scratch-coin.is-down {
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.62));
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sf-slot.is-flipping .sf-letter { animation: none; }
 }
@@ -729,4 +852,7 @@ button { cursor: pointer; }
   .pen-prop { width: min(160px, 40vw); }
   .pencil-prop { width: min(150px, 38vw); right: 0; }
   .sf-letter { font-size: clamp(9px, 2.6vw, 14px); }
+  .scratch-wrap { width: min(540px, 96vw); }
+  .scratch-coin { width: min(96px, 28vw); height: min(96px, 28vw); }
+  .scratch-hud { width: min(100% - 16px, 920px); }
 }

@@ -4,7 +4,7 @@ import { gsap } from 'gsap';
 const TOOLS = [
   { id: 'names', title: 'Names', deck: 'Write them on the paper. Luck circles one.', idx: '01' },
   { id: 'coin', title: 'Heads or Tails', deck: 'The quarter. One tap.', idx: '02' },
-  { id: 'yesno', title: 'Yes / No', deck: 'Press your luck. Its own coin.', idx: '03' },
+  { id: 'scratch', title: 'Scratch', deck: 'The quarter. Scratch the gold.', idx: '03' },
   { id: 'action', title: 'Action', deck: 'A thousand small good things. Luck picks one.', idx: '04' },
 ] as const;
 
@@ -53,7 +53,7 @@ export function Home({ onOpen }: HomeProps) {
           <em> You live with it.</em>
         </h1>
         <p className="lede">
-          Name picker, heads or tails, yes or no, random action. No account. No essay. Tap and go.
+          Name picker, heads or tails, scratch-off, random action. No account. No essay. Tap and go.
         </p>
       </header>
 

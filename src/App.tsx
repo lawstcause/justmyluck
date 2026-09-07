@@ -3,12 +3,14 @@ import { Action } from './pages/Action';
 import { Flip } from './pages/Flip';
 import { Home } from './pages/Home';
 import { Names } from './pages/Names';
+import { Scratch } from './pages/Scratch';
 
-type ToolId = 'home' | 'names' | 'coin' | 'yesno' | 'action';
+type ToolId = 'home' | 'names' | 'coin' | 'scratch' | 'action';
 
 function parseHash(): ToolId {
   const hash = window.location.hash.replace(/^#\/?/, '');
-  if (hash === 'names' || hash === 'coin' || hash === 'yesno' || hash === 'action') return hash;
+  if (hash === 'yesno' || hash === 'seer' || hash === 'scratch') return 'scratch';
+  if (hash === 'names' || hash === 'coin' || hash === 'action') return hash;
   return 'home';
 }
 
@@ -28,7 +30,7 @@ export default function App() {
     window.location.hash = id === 'home' ? '#/' : `#/${id}`;
   }
 
-  const desk = route === 'coin' || route === 'yesno' || route === 'names' || route === 'action';
+  const desk = route === 'coin' || route === 'scratch' || route === 'names' || route === 'action';
 
   return (
     <div className={`shell${desk ? ' shell-desk' : ''}`}>
@@ -45,17 +47,7 @@ export default function App() {
           title="Heads or tails."
         />
       ) : null}
-      {route === 'yesno' ? (
-        <Flip
-          faces={[
-            { id: 'yes', label: 'Yes' },
-            { id: 'no', label: 'No' },
-          ]}
-          kicker="yes / no"
-          pack="yesno"
-          title="Yes or no."
-        />
-      ) : null}
+      {route === 'scratch' ? <Scratch /> : null}
       {route === 'names' ? <Names /> : null}
       {route === 'action' ? <Action /> : null}
     </div>
