@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { recordPick } from '../luck';
 import { pickOne } from '../rng';
+import { ShareButton } from '../share/ShareButton';
+import { GoldDust } from './goldDust';
 import { SEER_LINES } from '../seer';
 import { moveScratch, playPaper, startScratch, stopScratch } from '../sound';
 
@@ -30,6 +33,10 @@ export function Scratch() {
   const last = useRef<{ x: number; y: number } | null>(null);
   const pose = useRef<CoinPose>({ x: 0, y: 0, rot: -12, down: false, on: false });
   const started = useRef(false);
+  const counted = useRef(false);
+  const [revealed, setRevealed] = useState(false);
+  const dustRef = useRef<HTMLCanvasElement>(null);
+  const dust = useRef<GoldDust | null>(null);
 
   const paintCoin = useCallback(() => {
     const el = coinRef.current;
@@ -153,6 +160,7 @@ export function Scratch() {
         if (overPanel(event.clientX, event.clientY)) {
           startScratch();
           moveScratch(Math.hypot(dx, dy));
+          dust.current?.spray(event.clientX, event.clientY, dx, dy);
         }
       }
     }
@@ -170,6 +178,11 @@ export function Scratch() {
       paintCoin();
       if (overPanel(event.clientX, event.clientY)) {
         setStatus('scratching');
+        if (!counted.current) {
+          counted.current = true;
+          setRevealed(true);
+          recordPick();
+        }
         startScratch();
         scratchAt(event.clientX, event.clientY);
       }
@@ -213,6 +226,17 @@ export function Scratch() {
   }, [paintCoin, scratchAt]);
 
   useEffect(() => {
+    const canvas = dustRef.current;
+    if (!canvas) return;
+    const flecks = new GoldDust(canvas);
+    dust.current = flecks;
+    return () => {
+      flecks.destroy();
+      dust.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
     const wrap = wrapRef.current;
     if (!wrap) return;
     const box = wrap.getBoundingClientRect();
@@ -230,6 +254,9 @@ export function Scratch() {
     drawing.current = false;
     last.current = null;
     started.current = false;
+    counted.current = false;
+    setRevealed(false);
+    dust.current?.clear();
     stopScratch();
     playPaper();
     setLine(pickOne(SEER_LINES));
@@ -257,9 +284,14 @@ export function Scratch() {
           <p className="ticker-status">
             {status === 'scratching' ? 'scratching' : 'use the quarter'}
           </p>
-          <button className="ghost names-refresh" onClick={newTicket} type="button">
-            New ticket
-          </button>
+          <span className="hud-actions">
+            {revealed ? (
+              <ShareButton card={{ kicker: 'the seer says', result: line }} />
+            ) : null}
+            <button className="ghost names-refresh" onClick={newTicket} type="button">
+              New ticket
+            </button>
+          </span>
         </div>
         <p className="kicker">scratch</p>
         <h1>Scratch.</h1>
@@ -267,7 +299,7 @@ export function Scratch() {
       </div>
 
       <div className="scratch-stage">
-        <div className="scratch-wrap" ref={wrapRef}>
+        <div className="scratch-wrap" data-shadow ref={wrapRef}>
           <img alt="Seer scratch-off ticket" className="scratch-ticket" draggable={false} src={TICKET_SRC} />
           <div
             className="scratch-panel"
@@ -285,6 +317,7 @@ export function Scratch() {
         </div>
       </div>
 
+      <canvas aria-hidden="true" className="gold-dust" ref={dustRef} />
       <div aria-hidden="true" className="scratch-coin" ref={coinRef} />
     </div>
   );

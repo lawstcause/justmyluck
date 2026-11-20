@@ -9,19 +9,28 @@ import {
   MeshStandardMaterial,
   PerspectiveCamera,
   PlaneGeometry,
+  PMREMGenerator,
   RepeatWrapping,
   Scene,
   SRGBColorSpace,
   TextureLoader,
   WebGLRenderer,
 } from 'three';
-import { pickOne } from '../rng';
-import { playCoinLand, playCoinToss } from '../sound';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { forceEdge, isLateNight, lamp } from '../atmosphere/lampState';
+import { pickOne, randomIndex } from '../rng';
+import { playCoinLand, playCoinToss, playEdgeRing } from '../sound';
+
+export type CoinFace = 'heads' | 'tails' | 'edge';
 
 type CoinCanvasProps = {
   pack: 'quarter' | 'yesno';
-  onLand: (face: 'heads' | 'tails', strength: number) => void;
+  onLand: (face: CoinFace, strength: number) => void;
 };
+
+/** A real coin lands on its edge roughly once in 6,000 flips. So does this one. */
+const EDGE_ODDS = 6000;
+const EDGE = Math.PI / 2;
 
 const HEADS = 0;
 const TAILS = Math.PI;
@@ -85,11 +94,16 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
     desk.receiveShadow = true;
     scene.add(desk);
 
+    // Metal needs something to reflect, otherwise it renders as dull brown.
+    const pmrem = new PMREMGenerator(renderer);
+    const envMap = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
     const physical = {
-      metalness: 0.7,
-      roughness: 0.28,
-      clearcoat: 0.65,
-      clearcoatRoughness: 0.2,
+      metalness: 0.85,
+      roughness: 0.3,
+      clearcoat: 0.5,
+      clearcoatRoughness: 0.18,
+      envMap,
+      envMapIntensity: 1.15,
     };
     const geo = new CylinderGeometry(1, 1, THICK, 96);
     const side = new MeshPhysicalMaterial({ map: edgeMap, ...physical });
@@ -101,9 +115,16 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
     scene.add(coin);
 
     scene.add(new AmbientLight(0xffe6c4, 0.82));
-    const key = new DirectionalLight(0xfff1d6, 1.42);
+    const night = isLateNight();
+    const key = new DirectionalLight(night ? 0xc8d4ff : 0xfff1d6, night ? 1.05 : 1.42);
     key.position.set(3, 8, 4);
     key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.camera.left = -3;
+    key.shadow.camera.right = 3;
+    key.shadow.camera.top = 3;
+    key.shadow.camera.bottom = -3;
+    key.shadow.radius = 6;
     scene.add(key);
     const fill = new DirectionalLight(0x8a7360, 0.5);
     fill.position.set(-4, 3, -2);
@@ -115,41 +136,49 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
       fromX: number;
       toX: number;
       height: number;
-      face: 'heads' | 'tails';
+      face: CoinFace;
       strength: number;
     };
 
     const clock = new Clock();
     let raf = 0;
     let toss: Toss | null = null;
-    let restFace: 'heads' | 'tails' = 'heads';
+    let restFace: CoinFace = 'heads';
+    let edgeForced = forceEdge();
+    let wobble = 0;
     let pointer: { x: number; y: number; t: number } | null = null;
     let lastMove = { x: 0, y: 0, t: 0 };
     let size = 1;
 
-    function restY() {
-      return REST_Y * size;
+    function restY(face: CoinFace = restFace) {
+      return (face === 'edge' ? 1 : REST_Y) * size;
     }
 
     function currentX() {
+      if (restFace === 'edge') return EDGE;
       return restFace === 'heads' ? HEADS : TAILS;
     }
 
     function launch(strength: number, dir: number) {
       if (toss) return;
       const power = Math.min(1, Math.max(0.25, strength));
-      const face = pickOne(['heads', 'tails'] as const);
-      let halfTurns = 3 + Math.round(power * 8);
-      const same = face === restFace;
-      if (same && halfTurns % 2 === 1) halfTurns += 1;
-      if (!same && halfTurns % 2 === 0) halfTurns += 1;
+      const onEdge = edgeForced || randomIndex(EDGE_ODDS) === 0;
+      edgeForced = false;
+      const face: CoinFace = onEdge ? 'edge' : pickOne(['heads', 'tails'] as const);
       const sign = dir < 0 ? -1 : 1;
       const fromX = currentX();
+      // Spin a whole number of half turns, then settle exactly on the chosen face.
+      const target = face === 'edge' ? EDGE : face === 'heads' ? HEADS : TAILS;
+      const halfTurns = 3 + Math.round(power * 8);
+      let toX = fromX + sign * Math.PI * halfTurns;
+      const off = (((target - toX) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+      toX += sign > 0 ? off : off - Math.PI * 2;
+      wobble = 0;
       toss = {
         start: clock.getElapsedTime(),
         duration: 0.65 + power * 0.7,
         fromX,
-        toX: fromX + sign * Math.PI * halfTurns,
+        toX,
         height: 1.28 + power * 1.35,
         face,
         strength: power,
@@ -158,7 +187,7 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
     }
 
     function isUi(target: EventTarget | null) {
-      return target instanceof Element && Boolean(target.closest('a, .back, input, textarea'));
+      return target instanceof Element && Boolean(target.closest('a, button, .back, input, textarea'));
     }
 
     function onDown(event: PointerEvent) {
@@ -206,7 +235,9 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
       renderer.setSize(w, h, false);
       camera.aspect = w / Math.max(h, 1);
       camera.updateProjectionMatrix();
-      size = w < 640 ? 0.36 : w < 900 ? 0.72 : 1;
+      // Keep the quarter roughly a quarter of the viewport, never filling it.
+      const visibleW = 2 * Math.tan((camera.fov * Math.PI) / 360) * 5.7 * camera.aspect;
+      size = Math.min(0.5, visibleW * 0.2);
       coin.scale.setScalar(size);
       if (!toss && !pointer) coin.position.y = restY();
     }
@@ -222,14 +253,19 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
         coin.rotation.x = toss.fromX + (toss.toX - toss.fromX) * ease;
         coin.rotation.z = 0;
         coin.rotation.y = 0;
-        coin.position.y = restY() + Math.sin(u * Math.PI) * toss.height * size;
+        const settle = restY(toss.face) * ease + restY() * (1 - ease);
+        coin.position.y = settle + Math.sin(u * Math.PI) * toss.height * size;
         coin.position.x = Math.sin(u * Math.PI) * 0.12 * toss.strength * size * (toss.toX < toss.fromX ? -1 : 1);
         if (u >= 1) {
           restFace = toss.face;
-          coin.rotation.x = restFace === 'heads' ? HEADS : TAILS;
+          coin.rotation.x = currentX();
           coin.rotation.z = 0;
           coin.position.y = restY();
           playCoinLand(toss.strength);
+          if (restFace === 'edge') {
+            wobble = 1;
+            playEdgeRing();
+          }
           landRef.current(toss.face, toss.strength);
           toss = null;
         }
@@ -241,11 +277,16 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
         coin.position.z += (dy * 0.006 * size - coin.position.z) * 0.4;
         coin.position.y += (0.16 * size - coin.position.y) * 0.3;
       } else {
-        coin.rotation.set(currentX(), 0, 0);
+        // On its edge it teeters for a moment before going still.
+        wobble *= 0.985;
+        coin.rotation.set(currentX() + Math.sin(t * 14) * 0.05 * wobble, 0, 0);
         coin.position.x += (0 - coin.position.x) * 0.16;
         coin.position.z += (0 - coin.position.z) * 0.16;
         coin.position.y = restY();
       }
+      // The lamp's position moves the key light, so the coin's shadow swings with it.
+      key.position.x += ((lamp.x - 0.5) * 9 - key.position.x) * 0.1;
+      key.position.z += ((lamp.y - 0.5) * 9 - key.position.z) * 0.1;
       renderer.render(scene, camera);
       raf = window.requestAnimationFrame(tick);
     }
@@ -269,6 +310,8 @@ export function CoinCanvas({ pack, onLand }: CoinCanvasProps) {
       headsMap.dispose();
       tailsMap.dispose();
       edgeMap.dispose();
+      envMap.dispose();
+      pmrem.dispose();
       renderer.domElement.remove();
     };
   }, [pack]);

@@ -1,5 +1,7 @@
 import { CSSProperties, FormEvent, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { recordPick } from '../luck';
 import { pickOne } from '../rng';
+import { ShareButton } from '../share/ShareButton';
 import { playPenCircle, playPenTravel, playPenWrite } from '../sound';
 
 const LINE_Y = [
@@ -7,7 +9,7 @@ const LINE_Y = [
   58.169, 61.338, 64.577, 67.676, 70.915, 74.155, 77.394, 80.704, 83.944, 87.113,
 ];
 
-const REST_PEN = { left: -6, top: 38 };
+const REST_PEN = { left: 106, top: 64 };
 const PEN_TRAVEL_MS = 820;
 const CIRCLE_MS = 550;
 const HOLD_MS = 420;
@@ -62,6 +64,7 @@ export function Names() {
   function choose() {
     if (names.length < 2 || circling) return;
     const next = pickOne(names);
+    recordPick();
     setWinner(next);
     setCircled(false);
     setCircling(true);
@@ -117,7 +120,7 @@ export function Names() {
       </div>
 
       <div className="sheet-stage">
-        <div className="sheet-wrap" ref={sheetRef}>
+        <div className="sheet-wrap" data-shadow ref={sheetRef}>
           <img alt="Notebook paper" className="sheet-img" src={`${import.meta.env.BASE_URL}paper/sheet.png`} />
           <ol className="sheet-lines">
             {names.map((name, index) => (
@@ -167,7 +170,7 @@ export function Names() {
             <img alt="" className="pen-prop" src={`${import.meta.env.BASE_URL}paper/pen.png`} />
           </div>
 
-          <img alt="" className="pencil-prop" src={`${import.meta.env.BASE_URL}paper/pencil.png`} />
+          <img alt="" className="pencil-prop" data-shadow src={`${import.meta.env.BASE_URL}paper/pencil.png`} />
         </div>
       </div>
 
@@ -192,6 +195,15 @@ export function Names() {
         <button className="primary" disabled={names.length < 2 || circling} onClick={choose} type="button">
           {circling ? '…' : 'Choose'}
         </button>
+        {winner && circled ? (
+          <ShareButton
+            card={{
+              kicker: `luck circled one of ${names.length}`,
+              result: winner,
+              handwritten: true,
+            }}
+          />
+        ) : null}
       </form>
     </div>
   );

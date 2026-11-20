@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { HOUSE_DECK } from '../actions';
+import { recordPick } from '../luck';
 import { pickOne } from '../rng';
+import { ShareButton } from '../share/ShareButton';
 import { playTap } from '../sound';
 import { SplitFlapBoard } from '../ticker/SplitFlapBoard';
 
@@ -17,6 +19,7 @@ export function Action() {
     setSpinning(true);
     setPlayId((n) => n + 1);
     setWinner(pickOne(HOUSE_DECK));
+    recordPick();
   }
 
   return (
@@ -55,6 +58,9 @@ export function Action() {
         <button className="primary" disabled={spinning} onClick={roll} type="button">
           {spinning ? 'Flipping…' : winner ? 'Pick again' : 'Pick one'}
         </button>
+        {winner && !spinning ? (
+          <ShareButton card={{ kicker: 'luck says: do this', result: winner }} />
+        ) : null}
       </div>
     </div>
   );

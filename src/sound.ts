@@ -369,3 +369,87 @@ export function playPaper() {
   src.start(t);
   src.stop(t + 0.24);
 }
+
+function noiseHit(c: AudioContext, t: number, opts: { type: BiquadFilterType; freq: number; q?: number; peak: number; decay: number }) {
+  const src = c.createBufferSource();
+  src.buffer = noise(c);
+  const f = c.createBiquadFilter();
+  f.type = opts.type;
+  f.frequency.value = opts.freq;
+  f.Q.value = opts.q ?? 0.8;
+  const g = c.createGain();
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(opts.peak, t + 0.004);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + opts.decay);
+  src.connect(f);
+  f.connect(g);
+  g.connect(c.destination);
+  src.start(t);
+  src.stop(t + opts.decay + 0.02);
+}
+
+/** Pull-chain lamp switch: a snappy two-part click. */
+export function playSwitch(on: boolean) {
+  const c = ac();
+  if (!c) return;
+  const t = c.currentTime;
+  noiseHit(c, t, { type: 'bandpass', freq: on ? 2600 : 2100, q: 2, peak: 0.12, decay: 0.03 });
+  burst(c, t, { freq: on ? 1400 : 1100, type: 'square', peak: 0.025, decay: 0.025 });
+  noiseHit(c, t + 0.05, { type: 'bandpass', freq: 900, q: 1.2, peak: 0.05, decay: 0.04 });
+  if (on) burst(c, t + 0.08, { freq: 120, type: 'sine', peak: 0.015, decay: 0.5 });
+}
+
+/** A coin left spinning on its edge: a long, slowing metallic ring. */
+export function playEdgeRing() {
+  const c = ac();
+  if (!c) return;
+  const t = c.currentTime;
+  for (let i = 0; i < 14; i += 1) {
+    const at = t + Math.pow(i / 14, 1.6) * 1.6;
+    burst(c, at, { freq: 3100 - i * 40, type: 'sine', peak: 0.03 * (1 - i / 16), decay: 0.12 });
+    noiseHit(c, at, { type: 'highpass', freq: 3000, peak: 0.02 * (1 - i / 16), decay: 0.03 });
+  }
+  burst(c, t + 0.02, { freq: 2240, type: 'triangle', peak: 0.05, attack: 0.01, decay: 2.4 });
+}
+
+/** Two dice skittering across wood. */
+export function playDice() {
+  const c = ac();
+  if (!c) return;
+  const t = c.currentTime;
+  const hits = [0, 0.07, 0.12, 0.2, 0.26, 0.35, 0.41, 0.52, 0.6];
+  hits.forEach((dt, i) => {
+    const fade = 1 - i / hits.length;
+    noiseHit(c, t + dt, { type: 'bandpass', freq: 1500 + (i % 3) * 500, q: 3, peak: 0.12 * fade, decay: 0.035 });
+    burst(c, t + dt, { freq: 640 + (i % 2) * 180, type: 'triangle', peak: 0.04 * fade, decay: 0.05 });
+  });
+}
+
+/** A fortune cookie snapping in half. */
+export function playCrack() {
+  const c = ac();
+  if (!c) return;
+  const t = c.currentTime;
+  noiseHit(c, t, { type: 'highpass', freq: 1800, peak: 0.18, decay: 0.05 });
+  noiseHit(c, t + 0.03, { type: 'bandpass', freq: 900, q: 1.5, peak: 0.1, decay: 0.08 });
+  noiseHit(c, t + 0.09, { type: 'highpass', freq: 3200, peak: 0.05, decay: 0.04 });
+}
+
+/** A soft magical shimmer for the clover. */
+export function playShimmer() {
+  const c = ac();
+  if (!c) return;
+  const t = c.currentTime;
+  [1318, 1568, 1976, 2637].forEach((f, i) => {
+    burst(c, t + i * 0.06, { freq: f, type: 'sine', peak: 0.03, attack: 0.01, decay: 0.6 });
+  });
+}
+
+/** Something new lands on the desk. */
+export function playDrop() {
+  const c = ac();
+  if (!c) return;
+  const t = c.currentTime;
+  burst(c, t, { freq: 110, type: 'sine', peak: 0.12, decay: 0.2 });
+  noiseHit(c, t, { type: 'lowpass', freq: 700, peak: 0.08, decay: 0.12 });
+}

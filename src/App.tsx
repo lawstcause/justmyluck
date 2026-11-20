@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { Lamp } from './atmosphere/Lamp';
+import { setLightsOut } from './atmosphere/lampState';
 import { Action } from './pages/Action';
 import { Flip } from './pages/Flip';
 import { Home } from './pages/Home';
@@ -33,6 +35,9 @@ export default function App() {
     };
   }, []);
 
+  // Leaving the room switches the lamp back on.
+  useEffect(() => setLightsOut(false), [route]);
+
   function go(id: ToolId) {
     window.location.hash = id === 'home' ? '#/' : `#/${id}`;
   }
@@ -42,6 +47,7 @@ export default function App() {
   return (
     <div className={`shell${desk ? ' shell-desk' : ''}`}>
       {desk ? null : <div className="grain" aria-hidden="true" />}
+      <div className="route-enter" key={route}>
       {route === 'home' ? <Home onOpen={(id) => go(id)} /> : null}
       {route === 'coin' ? (
         <Flip
@@ -57,6 +63,8 @@ export default function App() {
       {route === 'scratch' ? <Scratch /> : null}
       {route === 'list' ? <Names /> : null}
       {route === 'action' ? <Action /> : null}
+      </div>
+      <Lamp />
     </div>
   );
 }

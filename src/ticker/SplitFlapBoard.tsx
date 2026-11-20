@@ -118,7 +118,7 @@ export function SplitFlapBoard({ value, playId = 0, onSettled }: SplitFlapBoardP
   }, [playId, value]);
 
   return (
-    <div className="ticker" role="img" aria-label={value.trim() ? value : 'Luck has not picked yet'}>
+    <div className="ticker" data-shadow role="img" aria-label={value.trim() ? value : 'Luck has not picked yet'}>
       <div className="ticker-bezel">
         <div className="ticker-grid">
           {Array.from({ length: CELL_COUNT }, (_, i) => {
